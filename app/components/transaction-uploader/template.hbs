@@ -3,3 +3,31 @@
   accept="text/csv"
   multiple=false
   change=(action "handleFileUpload")}}
+
+{{#each accounts as |account|}}
+  <h2>{{account.accountNumber}}</h2>
+  <h3>{{account.sortCode}}</h3>
+
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Amount</th>
+      <th>Subcategory</th>
+      <th>Memo</th>
+      <th>Transaction Date</th>
+      <th>Description</th>
+      <th>Request Date</th>
+    </tr>
+  {{#each account.transaction as |transaction|}}
+    <tr>
+      <td>{{transaction.date}}</td>
+      <td>{{transaction.amount}}</td>
+      <td>{{transaction.subcategory}}</td>
+      <td>{{transaction.memo}}</td>
+      <td>{{transaction.transactionDate}}</td>
+      <td>{{transaction.description}}</td>
+      <td>{{transaction.requestDate}}</td>
+    </tr>
+  {{/each}}
+  </table>
+{{/each}}
