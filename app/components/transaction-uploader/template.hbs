@@ -4,6 +4,8 @@
   multiple=false
   change=(action "handleFileUpload")}}
 
+
+<h1>Data</h1>
 {{#each accounts as |account|}}
   <h2>{{account.accountNumber}}</h2>
   <h3>{{account.sortCode}}</h3>
@@ -15,8 +17,11 @@
       <th>Subcategory</th>
       <th>Memo</th>
       <th>Transaction Date</th>
+      <th>Payee</th>
       <th>Description</th>
       <th>Request Date</th>
+      <th>Value</th>
+      <th>Direction</th>
     </tr>
   {{#each account.transaction as |transaction|}}
     <tr>
@@ -25,8 +30,11 @@
       <td>{{transaction.subcategory}}</td>
       <td>{{transaction.memo}}</td>
       <td>{{transaction.transactionDate}}</td>
+      <td>{{transaction.payee}}</td>
       <td>{{transaction.description}}</td>
       <td>{{transaction.requestDate}}</td>
+      <td>{{transaction.value}}</td>
+      <td>{{transaction.direction}}</td>
     </tr>
   {{/each}}
   </table>
