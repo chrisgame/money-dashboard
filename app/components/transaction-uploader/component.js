@@ -8,10 +8,54 @@ export default Component.extend({
 
   store: service(),
 
-  transactionsByDescription: computed('accounts', function() {
-    return this.get('store').peekAll('transaction').map((transaction) => {
-      return `${transaction.get('description').trim()}, ${transaction.get('memo').trim()}, ${transaction.get('amount')}`;
+  transactionsGroupHierarchy: computed('accounts', function() {
+    let root = new Map();
+    let groupedTransactions = this.get('store').peekAll('transaction').map((transaction) => {
+      return {
+        description: transaction.get('description').trim(),
+        memo:  transaction.get('memo').trim(),
+        amount: transaction.get('amount')
+      }
     }).sort();
+
+    groupedTransactions.forEach(transaction => {
+      if (root.get(transaction.description)) {
+        let children = root.get(transaction.description);
+        root.set(transaction.description, [
+          ...children,
+          {
+            name: transaction.memo,
+            size: transaction.amount
+          }
+        ]);
+      } else {
+        root.set(transaction.description, [
+          {
+            name: transaction.memo,
+            size: transaction.amount
+          }
+        ]);
+      }
+    });
+
+    let rootChildren = [...root.keys()].map(key => {
+      let children = root.get(key);
+
+      return {
+        name: key,
+        children: children.map(child => {
+          return {
+            name: child.name,
+            size: child.size
+          }
+        })
+      }
+    });
+
+    return {
+      name: 'root',
+      children: rootChildren
+    };
   }),
 
   actions: {

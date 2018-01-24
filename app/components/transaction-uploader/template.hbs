@@ -4,11 +4,7 @@
   multiple=false
   change=(action "handleFileUpload")}}
 
-<ol>
-  {{#each transactionsByDescription as |transaction|}}
-    <li>{{transaction}}</li>
-  {{/each}}
-</ol>
+{{starburst-chart data=transactionsGroupHierarchy}}
 
 <h1>Data</h1>
 {{#each accounts as |account|}}
