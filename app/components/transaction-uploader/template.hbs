@@ -4,6 +4,13 @@
   multiple=false
   change=(action "handleFileUpload")}}
 
+<ol>
+  {{#each transactionsByDescription as |transaction|}}
+    <li>{{transaction}}</li>
+  {{/each}}
+</ol>
+
+<h1>Data</h1>
 {{#each accounts as |account|}}
   <h2>{{account.accountNumber}}</h2>
   <h3>{{account.sortCode}}</h3>

@@ -8,6 +8,12 @@ export default Component.extend({
 
   store: service(),
 
+  transactionsByDescription: computed('accounts', function() {
+    return this.get('store').peekAll('transaction').map((transaction) => {
+      return `${transaction.get('description').trim()}, ${transaction.get('memo').trim()}, ${transaction.get('amount')}`;
+    }).sort();
+  }),
+
   actions: {
     handleFileUpload(evt) {
       let file = evt.target.files[0];
