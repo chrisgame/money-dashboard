@@ -13,6 +13,12 @@ export default DS.Model.extend({
 
   transactionDate: readOnly('date'),
 
+  payee: computed('memo', function() {
+    let memo = this.get('memo');
+
+    return memo.split('  ')[0];
+  }),
+
   description: computed('memo', function() {
     let memo = this.get('memo');
 

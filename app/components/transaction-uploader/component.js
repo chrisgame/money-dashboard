@@ -9,53 +9,35 @@ export default Component.extend({
   store: service(),
 
   transactionsGroupHierarchy: computed('accounts', function() {
-    let root = new Map();
-    let groupedTransactions = this.get('store').peekAll('transaction').map((transaction) => {
+    let accounts = this.get('store').peekAll('account');
+    if (!accounts.get('length')) {
+      return [];
+    }
+
+    let account = accounts.get('firstObject');
+    let root = { name: account.get('accountNumber'), parent: null };
+
+    let uniqDescriptions = this.get('store').peekAll('transaction').mapBy('payee').uniq().sort();
+    let parents = uniqDescriptions.map(description => {
+      return { name: description, parent: account.get('accountNumber'), amount: null };
+    });
+
+    let children = this.get('store').peekAll('transaction').map(transaction => {
       return {
-        description: transaction.get('description').trim(),
-        memo:  transaction.get('memo').trim(),
+        name: transaction.get('memo'),
+        parent:  transaction.get('payee'),
         amount: transaction.get('amount')
       }
     }).sort();
 
-    groupedTransactions.forEach(transaction => {
-      if (root.get(transaction.description)) {
-        let children = root.get(transaction.description);
-        root.set(transaction.description, [
-          ...children,
-          {
-            name: transaction.memo,
-            size: transaction.amount
-          }
-        ]);
-      } else {
-        root.set(transaction.description, [
-          {
-            name: transaction.memo,
-            size: transaction.amount
-          }
-        ]);
-      }
-    });
+    let preStratData = [root, ...parents, ...children];
 
-    let rootChildren = [...root.keys()].map(key => {
-      let children = root.get(key);
-
-      return {
-        name: key,
-        children: children.map(child => {
-          return {
-            name: child.name,
-            size: child.size
-          }
-        })
-      }
-    });
-
-    return {
-      name: 'root',
-      children: rootChildren
-    };
+    if (children.length) {
+      return d3.stratify()
+        .id(function(d) { return d.name; })
+        .parentId(function(d) { return d.parent; })
+        (preStratData);
+    }
   }),
 
   actions: {
@@ -70,7 +52,7 @@ export default Component.extend({
             if (data[0] !== 'Number') {
               if (![...createdAccounts.keys()].includes(data[2])) {
                 let accountRecord = this.get('store').createRecord('account', {
-                  account: data[2]
+                  account: data[2].trim()
                 });
 
                 createdAccounts.set(data[2], accountRecord);
@@ -79,9 +61,9 @@ export default Component.extend({
               this.get('store').createRecord('transaction', {
                 date: data[1],
                 account: createdAccounts.get(data[2]),
-                amount: data[3],
-                subcategory: data[4],
-                memo: data[5]
+                amount: data[3].trim(),
+                subcategory: data[4].trim(),
+                memo: data[5].trim()
               });
             }
           });
