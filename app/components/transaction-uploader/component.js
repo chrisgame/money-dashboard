@@ -26,7 +26,8 @@ export default Component.extend({
       return {
         name: transaction.get('memo'),
         parent:  transaction.get('payee'),
-        amount: transaction.get('amount')
+        value: transaction.get('value'),
+        direction: transaction.get('direction')
       }
     }).sort();
 

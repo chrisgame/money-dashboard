@@ -21,6 +21,8 @@
       <th>Payee</th>
       <th>Description</th>
       <th>Request Date</th>
+      <th>Value</th>
+      <th>Direction</th>
     </tr>
   {{#each account.transaction as |transaction|}}
     <tr>
@@ -32,6 +34,8 @@
       <td>{{transaction.payee}}</td>
       <td>{{transaction.description}}</td>
       <td>{{transaction.requestDate}}</td>
+      <td>{{transaction.value}}</td>
+      <td>{{transaction.direction}}</td>
     </tr>
   {{/each}}
   </table>

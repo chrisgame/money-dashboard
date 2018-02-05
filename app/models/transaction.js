@@ -40,5 +40,13 @@ export default DS.Model.extend({
     } else {
       return null;
     }
+  }),
+
+  value: computed('amount', function() {
+    return this.get('amount').replace(/-/, '');
+  }),
+
+  direction: computed('amount', function() {
+    return this.get('amount').match(/-/) ? 'outgoing' : 'incoming';
   })
 });

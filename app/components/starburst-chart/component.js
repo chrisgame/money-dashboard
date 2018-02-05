@@ -21,11 +21,11 @@ export default Component.extend({
         .append('g')
           .attr('transform', 'translate(' + width / 2 + ',' + height * .52 + ')');
 
-      var partition = d3.partition()
+      var partition = d3.partition(root.sum((d) => { return d.value ? 1 : 0; }))
           .size([2 * Math.PI, radius * radius]);
 
       var arc = d3.arc()
-          .startAngle(function(d) { debugger; return d.x0; })
+          .startAngle(function(d) { return d.x0; })
           .endAngle(function(d) { return d.x1; })
           .innerRadius(function(d) { return Math.sqrt(d.y0); })
           .outerRadius(function(d) { return Math.sqrt(d.y1); });
