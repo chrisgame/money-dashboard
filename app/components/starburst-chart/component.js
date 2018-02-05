@@ -11,7 +11,7 @@ export default Component.extend({
     let width = this.element.clientWidth;
     let height = width;
     let radius = Math.min(width, height) / 2;
-    //let color = d3.schemeCategory20c();
+    let color = d3.scaleOrdinal(d3.schemeCategory20c);
     let root = this.get('data');
 
     if (root.height) {
@@ -19,7 +19,7 @@ export default Component.extend({
           .attr('width', width)
           .attr('height', height)
         .append('g')
-          .attr('transform', 'translate(' + width / 2 + ',' + height * .52 + ')');
+          .attr('transform', 'translate(' + width / 2 + ',' + height * .5 + ')');
 
       var partition = d3.partition(root.sum((d) => { return Math.abs(d.value) }))
           .size([2 * Math.PI, radius * radius]);
@@ -36,8 +36,7 @@ export default Component.extend({
           .attr('display', function(d) { return d.depth ? null : 'none'; }) // hide inner ring
           .attr('d', arc)
           .style('stroke', '#fff')
-          //.style('fill', function(d) { return color((d.children ? d : d.parent).name); })
-          .style('fill', 'red')
+          .style('fill', function(d) { return color(d.data.name); })
           .style('fill-rule', 'evenodd');
     }
   }
