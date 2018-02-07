@@ -31,7 +31,7 @@ export default Component.extend({
         .append('g')
           .attr('transform', 'translate(' + width / 2 + ',' + height * .5 + ')');
 
-      var partition = d3.partition(root.sum((d) => { return d.value ? 1 : 0; }))
+      var partition = d3.partition(root.sum((d) => { return Math.abs(d.value) }))
           .size([2 * Math.PI, radius * radius]);
 
       var arc = d3.arc()
