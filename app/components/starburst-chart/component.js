@@ -8,7 +8,7 @@ export default Component.extend({
   color: null,
 
   didRender() {
-    let width = this.element.clientWidth;
+    let width = Math.min(window.innerWidth, window.innerHeight) - 20;
     let height = width;
     let radius = Math.min(width, height) / 2;
     let color = d3.scaleOrdinal(d3.schemeCategory20c);
