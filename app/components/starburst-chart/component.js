@@ -37,7 +37,24 @@ export default Component.extend({
           .attr('d', arc)
           .style('stroke', '#fff')
           .style('fill', function(d) { return color(d.data.name); })
-          .style('fill-rule', 'evenodd');
+          .style('fill-rule', 'evenodd')
+          .on('mouseover', function(d) {
+            svg.selectAll('path')
+              .style('opacity', 0.5);
+
+            let ancestors = d.ancestors().reverse();
+            ancestors.shift();
+
+            svg.selectAll('path')
+              .filter(function(node) {
+                return (ancestors.indexOf(node) >= 0);
+              })
+              .style('opacity', 1);
+          })
+          .on('mouseleave', function(d) {
+            svg.selectAll('path')
+              .style('opacity', 1);
+          });
     }
   }
 });
