@@ -46,7 +46,7 @@ export default Component.extend({
           .attr('display', function(d) { return d.depth ? null : 'none'; }) // hide inner ring
           .attr('d', arc)
           .style('stroke', '#fff')
-          .style('fill', function(d) { return color(d.data.name); })
+          .style('fill', function(d) { return color((d.children ? d : d.parent).data.name); })
           .style('fill-rule', 'evenodd')
           .on('mouseover', function(d) {
             svg.selectAll('path')
