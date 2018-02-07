@@ -15,6 +15,16 @@ export default Component.extend({
     let root = this.get('data');
 
     if (root.height) {
+
+      let chartCenter = d3.select('#chart-center')
+        .style('position', 'absolute')
+        .style('top', `${radius - radius/6}px`)
+        .style('left', `${radius/2 + 10}px`)
+        .style('width', `${radius}px`)
+        .style('height', `${radius/2 - radius/10}px`)
+        .style('text-align', 'center')
+        .style('font-size', '32px')
+
       let svg = d3.select(this.element).append('svg')
           .attr('width', width)
           .attr('height', height)
@@ -50,10 +60,25 @@ export default Component.extend({
                 return (ancestors.indexOf(node) >= 0);
               })
               .style('opacity', 1);
+
+            let centerHtml = `<div>${d.data.payee}</div>`;
+            if (d.data.value) {
+              centerHtml = centerHtml.concat(`<div>£${d.data.value}</div>`);
+            }
+            if (d.data.total) {
+              centerHtml = centerHtml.concat(`<div>£${d.data.total}</div>`);
+            }
+
+            chartCenter
+              .html(centerHtml)
+              .style('visibility', 'visible');
           })
           .on('mouseleave', function(d) {
             svg.selectAll('path')
               .style('opacity', 1);
+
+            chartCenter
+              .style('visibility', 'hidden');
           });
     }
   }
