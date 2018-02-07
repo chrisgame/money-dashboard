@@ -40,9 +40,17 @@ export default Component.extend({
         value: transaction.get('value'),
         direction: transaction.get('direction')
       }
-    }).sort();
+    });
 
-    let preStratData = [root, ...parents, ...children];
+    let preStratData = [
+      root,
+      ...parents.sort((a, b) => {
+        return b.total - a.total;
+      }),
+      ...children.sort((a, b) => {
+        return b.value - a.value;
+      })
+    ];
 
     if (children.length) {
       return d3.stratify()
