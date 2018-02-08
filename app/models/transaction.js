@@ -13,6 +13,12 @@ export default DS.Model.extend({
 
   transactionDate: readOnly('date'),
 
+  payee: computed('memo', function() {
+    let memo = this.get('memo');
+
+    return memo.split('  ')[0];
+  }),
+
   description: computed('memo', function() {
     let memo = this.get('memo');
 
@@ -34,5 +40,13 @@ export default DS.Model.extend({
     } else {
       return null;
     }
+  }),
+
+  value: computed('amount', function() {
+    return this.get('amount').replace(/-/, '');
+  }),
+
+  direction: computed('amount', function() {
+    return this.get('amount').match(/-/) ? 'outgoing' : 'incoming';
   })
 });
