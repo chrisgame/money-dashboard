@@ -17,12 +17,21 @@ export default Component.extend({
     let account = accounts.get('firstObject');
     let root = { name: account.get('accountNumber'), parent: null };
 
-    let uniqDescriptions = this.get('store').peekAll('transaction').mapBy('payee').uniq().sort();
-    let parents = uniqDescriptions.map(description => {
-      return { name: description, parent: account.get('accountNumber'), amount: null };
+    let uniqDescriptions = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').mapBy('payee').uniq().sort();
+    let parents = uniqDescriptions.map(payee => {
+      let childrenTotal = Math.abs(this.get('store').peekAll('transaction').filterBy('payee', payee).reduce((sum, current) => {
+          return sum + parseFloat(current.get('amount'));
+        }, 0)).toFixed(2);
+
+      return {
+        name: payee,
+        parent: account.get('accountNumber'),
+        payee: payee,
+        total: childrenTotal
+      };
     });
 
-    let children = this.get('store').peekAll('transaction').map(transaction => {
+    let children = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').map(transaction => {
       return {
         name: transaction.get('memo'),
         parent:  transaction.get('payee'),
