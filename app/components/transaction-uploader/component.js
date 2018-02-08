@@ -17,7 +17,7 @@ export default Component.extend({
     let account = accounts.get('firstObject');
     let root = { name: account.get('accountNumber'), parent: null };
 
-    let uniqDescriptions = this.get('store').peekAll('transaction').mapBy('payee').uniq().sort();
+    let uniqDescriptions = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').mapBy('payee').uniq().sort();
     let parents = uniqDescriptions.map(payee => {
       let childrenTotal = Math.abs(this.get('store').peekAll('transaction').filterBy('payee', payee).reduce((sum, current) => {
           return sum + parseFloat(current.get('amount'));
@@ -31,7 +31,7 @@ export default Component.extend({
       };
     });
 
-    let children = this.get('store').peekAll('transaction').map(transaction => {
+    let children = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').map(transaction => {
       return {
         name: transaction.get('memo'),
         parent:  transaction.get('payee'),
