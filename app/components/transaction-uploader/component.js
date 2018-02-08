@@ -24,6 +24,7 @@ export default Component.extend({
         }, 0)).toFixed(2);
 
       return {
+        nodeType: 'group',
         name: payee,
         parent: account.get('accountNumber'),
         payee: payee,
@@ -33,6 +34,7 @@ export default Component.extend({
 
     let children = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').map(transaction => {
       return {
+        nodeType: 'transaction',
         name: transaction.get('memo'),
         parent:  transaction.get('payee'),
         value: transaction.get('value'),
