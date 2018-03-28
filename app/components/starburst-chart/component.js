@@ -36,20 +36,20 @@ export default Component.extend({
           .size([2 * Math.PI, radius * radius]);
 
       var arc = d3.arc()
-          .startAngle(function(d) { return d.x0; })
-          .endAngle(function(d) { return d.x1; })
-          .innerRadius(function(d) { return Math.sqrt(d.y0); })
-          .outerRadius(function(d) { return Math.sqrt(d.y1); })
-          .padAngle(function(d) { return 0.001; });
+          .startAngle(d => { return d.x0; })
+          .endAngle(d => { return d.x1; })
+          .innerRadius(d => { return Math.sqrt(d.y0); })
+          .outerRadius(d => { return Math.sqrt(d.y1); })
+          .padAngle(() => { return 0.001; });
 
       var path = svg.selectAll('path')
-          .data(partition(root).descendants(), function(d) { return d.id; })
+          .data(partition(root).descendants(), d => { return d.id; })
         .enter().append('path')
-          .attr('display', function(d) { return d.depth ? null : 'none'; }) // hide inner ring
+          .attr('display', d => { return d.depth ? null : 'none'; }) // hide inner ring
           .attr('d', arc)
-          .style('stroke', function(d) { return color((d.children ? d : d.parent).data.name); })
+          .style('stroke', d => { return color((d.children ? d : d.parent).data.name); })
           .style('stroke-width', '1px')
-          .style('fill', function(d) { return color((d.children ? d : d.parent).data.name); })
+          .style('fill', d => { return color((d.children ? d : d.parent).data.name); })
           .style('fill-opacity', '0.6')
           .each(function(d) {
             this._currentAngle = {
@@ -59,7 +59,7 @@ export default Component.extend({
               y1: d.y1
             };
           })
-        .on('mouseover', function(d) {
+        .on('mouseover', d => {
           svg.selectAll('path')
             .style('opacity', 0.3);
 
@@ -67,13 +67,13 @@ export default Component.extend({
           ancestors.shift();
 
           svg.selectAll('path')
-            .filter(function(node) {
+            .filter(node => {
               return (ancestors.indexOf(node) >= 0);
             })
             .style('opacity', 1);
 
           svg.selectAll('path')
-            .filter(function(node) {
+            .filter(node => {
               if (!d.children || root.children.length === 1)
                 return false;
               else {
@@ -97,7 +97,7 @@ export default Component.extend({
             .html(centerHtml)
             .style('visibility', 'visible');
         })
-        .on('mouseleave', function() {
+        .on('mouseleave', () => {
           svg.selectAll('path')
             .style('opacity', 1)
             .style('stroke-width', '1px')
@@ -107,7 +107,7 @@ export default Component.extend({
             .style('visibility', 'hidden');
         });
 
-      d3.selectAll('path').on('click', function(d) {
+      d3.selectAll('path').on('click', d => {
         //prune the node and it's children from the hierarchy
         if (d.depth > 1) {
           //children can't be pruned individually
@@ -125,11 +125,11 @@ export default Component.extend({
         });
         root.children.splice(childToRemove, 1);
 
-        partition = d3.partition(root.sum((d) => { return Math.abs(d.value) }))
+        partition = d3.partition(root.sum(d => { return Math.abs(d.value) }))
           .size([2 * Math.PI, radius * radius]);
 
         let pathsWithNewData = path
-          .data(partition(root).descendants(), function(d) { return d.id; });
+          .data(partition(root).descendants(), d => { return d.id; });
 
         pathsWithNewData
           .transition()
@@ -144,7 +144,7 @@ export default Component.extend({
 
               var i = d3.interpolate(this._currentAngle, endAngle);
               this._currentAngle = i(0);
-              return function(t) {
+              return t => {
                 return arc(i(t));
               };
             });
