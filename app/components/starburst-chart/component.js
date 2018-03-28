@@ -10,7 +10,7 @@ export default Component.extend({
   didRender() {
     let width = Math.min(window.innerWidth, window.innerHeight) - 20;
     let height = width;
-    let radius = Math.min(width, height) / 2;
+    let radius = Math.min(width, height) / 2 -4;
     let color = d3.scaleOrdinal(d3.schemeCategory20);
     let root = this.get('data');
 
@@ -39,16 +39,18 @@ export default Component.extend({
           .startAngle(function(d) { return d.x0; })
           .endAngle(function(d) { return d.x1; })
           .innerRadius(function(d) { return Math.sqrt(d.y0); })
-          .outerRadius(function(d) { return Math.sqrt(d.y1); });
+          .outerRadius(function(d) { return Math.sqrt(d.y1); })
+          .padAngle(function(d) { return 0.001; });
 
       var path = svg.selectAll('path')
           .data(partition(root).descendants(), function(d) { return d.id; })
         .enter().append('path')
           .attr('display', function(d) { return d.depth ? null : 'none'; }) // hide inner ring
           .attr('d', arc)
-          .style('stroke', '#fff')
+          .style('stroke', function(d) { return color((d.children ? d : d.parent).data.name); })
+          .style('stroke-width', '1px')
           .style('fill', function(d) { return color((d.children ? d : d.parent).data.name); })
-          .style('fill-rule', 'evenodd')
+          .style('fill-opacity', '0.6')
           .each(function(d) {
             this._currentAngle = {
               x0: d.x0,
@@ -59,7 +61,7 @@ export default Component.extend({
           })
         .on('mouseover', function(d) {
           svg.selectAll('path')
-            .style('opacity', 0.5);
+            .style('opacity', 0.3);
 
           let ancestors = d.ancestors().reverse();
           ancestors.shift();
