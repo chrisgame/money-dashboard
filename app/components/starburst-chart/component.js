@@ -72,6 +72,17 @@ export default Component.extend({
             })
             .style('opacity', 1);
 
+          svg.selectAll('path')
+            .filter(function(node) {
+              if (!d.children || root.children.length === 1)
+                return false;
+              else {
+                return (ancestors.indexOf(node) >= 0 || ancestors[0].children.indexOf(node) >=0);
+              }
+            })
+            .style('stroke-width', '2px')
+            .style('stroke-dasharray', '10,10');
+
           let centerHtml = '';
 
           if (d.data.nodeType === 'group') {
@@ -88,7 +99,9 @@ export default Component.extend({
         })
         .on('mouseleave', function() {
           svg.selectAll('path')
-            .style('opacity', 1);
+            .style('opacity', 1)
+            .style('stroke-width', '1px')
+            .style('stroke-dasharray', '0');
 
           chartCenter
             .style('visibility', 'hidden');
