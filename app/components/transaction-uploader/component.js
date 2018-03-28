@@ -8,6 +8,10 @@ export default Component.extend({
 
   store: service(),
 
+  colorScale: computed(function() {
+    return d3.scaleOrdinal(d3.schemeCategory20);
+  }),
+
   transactionsGroupHierarchy: computed('accounts', function() {
     let accounts = this.get('store').peekAll('account');
     if (!accounts.get('length')) {

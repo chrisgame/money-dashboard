@@ -11,7 +11,7 @@ export default Component.extend({
     let width = Math.min(window.innerWidth, window.innerHeight) - 20;
     let height = width;
     let radius = Math.min(width, height) / 2 -4;
-    let color = d3.scaleOrdinal(d3.schemeCategory20);
+    let color = this.get('color');
     let root = this.get('data');
 
     if (root.height) {
