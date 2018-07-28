@@ -87,7 +87,7 @@ export default Component.extend({
                 account: createdAccounts.get(data[2]),
                 amount: data[3].trim(),
                 subcategory: data[4].trim(),
-                memo: data[5].trim()
+                memo: data[6] ? `${data[5].trim()} ${data[6].trim()}` : data[5].trim()
               });
             }
           });
