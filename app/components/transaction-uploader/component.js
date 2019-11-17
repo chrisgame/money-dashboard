@@ -87,7 +87,7 @@ export default Component.extend({
                 account: createdAccounts.get(data[2]),
                 amount: data[3].trim(),
                 subcategory: data[4].trim(),
-                memo: data[5].trim()
+                memo: this._buildMemoString(data[5], data[6], data[4])
               });
             }
           });
@@ -99,5 +99,17 @@ export default Component.extend({
       let blob = file.slice(0, file.size);
       reader.readAsText(blob);
     }
-  }
+  },
+
+  _buildMemoString(col1, col2, subcategory) {
+    if (col2) {
+      return `${col1.trim()} ${col2.trim()}`;
+    }
+
+    if (subcategory === 'OTH') {
+      return `Bank Charges   ${col1.trim()}`;
+    }
+
+    return col1.trim();
+  },
 });
