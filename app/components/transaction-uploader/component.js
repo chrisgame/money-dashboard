@@ -59,8 +59,9 @@ export default Component.extend({
     if (children.length) {
       return d3.stratify()
         .id(function(d) { return d.name; })
-        .parentId(function(d) { return d.parent; })
-        (preStratData);
+        .parentId(function(d) { return d.parent; })(preStratData);
+    } else {
+      return [];
     }
   }),
 
