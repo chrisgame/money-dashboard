@@ -5,8 +5,7 @@
 /tmp
 
 # dependencies
-/node_modules
-/bower_components
+/node_modules/
 
 # misc
 /.sass-cache
@@ -18,6 +17,8 @@ yarn-error.log
 testem.log
 
 # ember-try
-.node_modules.ember-try/
-bower.json.ember-try
-package.json.ember-try
+/.node_modules.ember-try/
+/package.json.ember-try
+.DS_Store
+errors.csv
+statements/
