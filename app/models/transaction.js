@@ -14,24 +14,24 @@ export default DS.Model.extend({
   transactionDate: readOnly('date'),
 
   payee: computed('memo', function() {
-    let memo = this.get('memo');
+    let memo = this.memo;
 
     return memo.split('  ')[0];
   }),
 
   description: computed('memo', function() {
-    let memo = this.get('memo');
+    let memo = this.memo;
 
     return memo.match(/(.*)\sON\s/) ? memo.match(/(.*)\sON\s/)[1] : memo;
   }),
 
   requestDate: computed('memo', function() {
-    let memo = this.get('memo');
+    let memo = this.memo;
     let transactionDateParser = d3.utcParse("%d/%m/%Y");
     let requestDateParser = d3.utcParse("%d %b %Y");
     let transactionDateYearFormatter = d3.utcFormat("%Y");
     let transactionDateFormatter = d3.utcFormat("%d/%m/%Y");
-    let transactionDateYear = transactionDateYearFormatter(transactionDateParser(this.get('date')));
+    let transactionDateYear = transactionDateYearFormatter(transactionDateParser(this.date));
 
     if (memo.match(/\sON\s(.*)/)) {
       let memoDate =  memo.match(/\sON\s(\d\d\s\w\w\w)/)[1];
@@ -43,10 +43,10 @@ export default DS.Model.extend({
   }),
 
   value: computed('amount', function() {
-    return this.get('amount').replace(/-/, '');
+    return this.amount.replace(/-/, '');
   }),
 
   direction: computed('amount', function() {
-    return this.get('amount').match(/-/) ? 'outgoing' : 'incoming';
+    return this.amount.match(/-/) ? 'outgoing' : 'incoming';
   })
 });

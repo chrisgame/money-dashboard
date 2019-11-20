@@ -7,13 +7,13 @@ export default DS.Model.extend({
   transaction: DS.hasMany('transaction'),
 
   accountNumber: computed('account', function() {
-    let account = this.get('account');
+    let account = this.account;
 
     return account.match(/\s(.*)/)[1];
   }),
 
   sortCode: computed('account', function() {
-    let account = this.get('account');
+    let account = this.account;
 
     return account.match(/(.*)\s/)[1];
   })

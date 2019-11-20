@@ -13,7 +13,7 @@ export default Component.extend({
   }),
 
   transactionsGroupHierarchy: computed('accounts', function() {
-    let accounts = this.get('store').peekAll('account');
+    let accounts = this.store.peekAll('account');
     if (!accounts.get('length')) {
       return [];
     }
@@ -21,9 +21,9 @@ export default Component.extend({
     let account = accounts.get('firstObject');
     let root = { name: account.get('accountNumber'), parent: null };
 
-    let uniqDescriptions = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').mapBy('payee').uniq().sort();
+    let uniqDescriptions = this.store.peekAll('transaction').filterBy('direction', 'outgoing').mapBy('payee').uniq().sort();
     let parents = uniqDescriptions.map(payee => {
-      let childrenTotal = Math.abs(this.get('store').peekAll('transaction').filterBy('payee', payee).reduce((sum, current) => {
+      let childrenTotal = Math.abs(this.store.peekAll('transaction').filterBy('payee', payee).reduce((sum, current) => {
           return sum + parseFloat(current.get('amount'));
         }, 0)).toFixed(2);
 
@@ -36,7 +36,7 @@ export default Component.extend({
       };
     });
 
-    let children = this.get('store').peekAll('transaction').filterBy('direction', 'outgoing').map(transaction => {
+    let children = this.store.peekAll('transaction').filterBy('direction', 'outgoing').map(transaction => {
       return {
         nodeType: 'transaction',
         name: transaction.get('memo'),
@@ -76,14 +76,14 @@ export default Component.extend({
           d3.csvParseRows(endEvt.target.result, data => {
             if (data[0] !== 'Number') {
               if (![...createdAccounts.keys()].includes(data[2])) {
-                let accountRecord = this.get('store').createRecord('account', {
+                let accountRecord = this.store.createRecord('account', {
                   account: data[2].trim()
                 });
 
                 createdAccounts.set(data[2], accountRecord);
               }
 
-              this.get('store').createRecord('transaction', {
+              this.store.createRecord('transaction', {
                 date: data[1],
                 account: createdAccounts.get(data[2]),
                 amount: data[3].trim(),
@@ -93,7 +93,7 @@ export default Component.extend({
             }
           });
 
-          this.set('accounts', this.get('store').peekAll('account'));
+          this.set('accounts', this.store.peekAll('account'));
         }
       });
 
