@@ -8,8 +8,9 @@ export default Component.extend({
 
   store: service(),
 
-  colorScale: computed(function() {
-    return d3.scaleOrdinal(d3.schemeCategory20);
+  colorScale: computed('accounts', function() {
+    let uniqDescriptions = this.store.peekAll('transaction').filterBy('direction', 'outgoing').mapBy('payee').uniq().sort();
+    return d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, uniqDescriptions.length + 1));
   }),
 
   transactionsGroupHierarchy: computed('accounts', function() {
