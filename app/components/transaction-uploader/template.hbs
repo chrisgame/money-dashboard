@@ -15,31 +15,35 @@
   <h3>{{account.sortCode}}</h3>
 
   <table>
-    <tr>
-      <th>Date</th>
-      <th>Amount</th>
-      <th>Subcategory</th>
-      <th>Memo</th>
-      <th>Transaction Date</th>
-      <th>Payee</th>
-      <th>Description</th>
-      <th>Request Date</th>
-      <th>Value</th>
-      <th>Direction</th>
-    </tr>
-  {{#each account.transaction as |transaction|}}
-    <tr>
-      <td>{{transaction.date}}</td>
-      <td>{{transaction.amount}}</td>
-      <td>{{transaction.subcategory}}</td>
-      <td>{{transaction.memo}}</td>
-      <td>{{transaction.transactionDate}}</td>
-      <td>{{transaction.payee}}</td>
-      <td>{{transaction.description}}</td>
-      <td>{{transaction.requestDate}}</td>
-      <td>{{transaction.value}}</td>
-      <td>{{transaction.direction}}</td>
-    </tr>
-  {{/each}}
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Subcategory</th>
+        <th>Memo</th>
+        <th>Transaction Date</th>
+        <th>Payee</th>
+        <th>Description</th>
+        <th>Request Date</th>
+        <th>Value</th>
+        <th>Direction</th>
+      </tr>
+    </thead>
+    {{#each account.transaction as |transaction|}}
+      <tbody>
+        <tr>
+          <td>{{transaction.date}}</td>
+          <td>{{transaction.amount}}</td>
+          <td>{{transaction.subcategory}}</td>
+          <td>{{transaction.memo}}</td>
+          <td>{{transaction.transactionDate}}</td>
+          <td>{{transaction.payee}}</td>
+          <td>{{transaction.description}}</td>
+          <td>{{transaction.requestDate}}</td>
+          <td>{{transaction.value}}</td>
+          <td>{{transaction.direction}}</td>
+        </tr>
+      </tbody>
+    {{/each}}
   </table>
 {{/each}}
