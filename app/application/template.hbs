@@ -1,7 +1,8 @@
 {{#if session.isAuthenticated}}
   <button {{action "invalidateSession"}}>Logout</button>
 {{else}}
-  {{#link-to "login"}}Login{{/link-to}}
+  <LinkTo @route="login">Login</LinkTo>
 {{/if}}
-<TransactionUploader />
+
+<LinkTo @route="statement-upload">Upload a statement to visualize</LinkTo>
 {{outlet}}

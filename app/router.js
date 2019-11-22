@@ -11,4 +11,5 @@ Router.map(function() {
   this.route('authenticated', { path: '' }, function() {
 
   });
+  this.route('statement-upload');
 });
