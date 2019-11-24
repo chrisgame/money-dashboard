@@ -1,20 +1,28 @@
 import Controller from '@ember/controller';
+import ENV from 'money-dashboard/config/environment';
 import { inject as service } from '@ember/service';
 
 export default Controller.extend({
+  router: service(),
   session: service(),
 
   actions: {
-    async authenticate() {
-      let { identification, password } = this.getProperties('identification', 'password');
-      try {
-        await this.session.authenticate('authenticator:oauth2', identification, password);
-      } catch(error) {
-        this.set('errorMessage', error.error || error);
-      }
+    authenticate() {
+      let { clientId, clientSecret } = this;
+      let redirectUri = 'http://local-money-dashboard.com:4200/monzo-auth';
 
-      if (this.session.isAuthenticated) {
-        // What to do with all this success?
+      this.session.set('data.clientId', clientId);
+      this.session.set('data.clientSecret', clientSecret);
+
+      if(ENV.environment !== 'production') {
+        this.router.transitionTo('monzo-auth', {
+          queryParams: {
+            code: 'acbdfe',
+            state: 'random'
+          }
+        });
+      } else {
+        window.location = `https://auth.monzo.com/?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${clientSecret}`;
       }
     }
   }
