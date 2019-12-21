@@ -16,11 +16,14 @@ export default RESTAdapter.extend(DataAdapterMixin, {
 		return headers;
 	}),
 
-	pathForType(type) {
-		if (type === 'monzo/who-am-i') {
-			return 'ping/whoami';
-		} else {
-			return this._super(...arguments);
-		}
-	},
+  pathForType(type) {
+    switch (type) {
+      case 'monzo/who-am-i':
+        return 'ping/whoami';
+      case 'monzo/accounts':
+        return 'accounts';
+      default:
+        return this._super(...arguments);
+    }
+  },
 });

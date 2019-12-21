@@ -1,0 +1,9 @@
+{{#power-select
+  placeholder="Pick an account"
+  selected=selectedAccount
+  options=accounts
+  onChange=onChangeAccount
+  as |account|
+}}
+  {{account.description}}
+{{/power-select}}

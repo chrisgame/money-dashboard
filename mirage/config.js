@@ -26,4 +26,21 @@ export default function() {
 			'user_id': 'the_user_id'
 		};
 	});
+
+  this.get('https://api.monzo.com/accounts', () => {
+    return {
+      'accounts': [
+        {
+          'id': 'acc_00009237aqC8c5umZmrRdh',
+          'description': "Peter Pan's Account",
+          'created': '2015-11-13T12:17:42Z'
+        },
+        {
+          'id': 'acc_01009237sdfdsfdsw4rwefxsew',
+          'description': "Captain Hook's Account",
+          'created': '2016-11-13T12:17:42Z'
+        }
+      ]
+    };
+  });
 }
