@@ -10,7 +10,7 @@ Router.map(function() {
   this.route('login');
   this.route('monzo-auth');
   this.route('authenticated', { path: '' }, function() {
-    this.route('account', { path: '/:account_id' });
+    this.route('transactions', { path: '/:account_description/transactions' });
   });
   this.route('statement-upload');
 });

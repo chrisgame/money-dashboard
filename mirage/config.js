@@ -1,3 +1,5 @@
+import { Response } from 'ember-cli-mirage';
+
 export default function() {
 
   let accessToken = '123-abc-456';
@@ -19,7 +21,20 @@ export default function() {
     };
   });
 
-	this.get('https://api.monzo.com/ping/whoami', () => {
+	this.get('https://api.monzo.com/ping/whoami', (schema, request) => {
+    let error = undefined;
+
+    if (request.requestHeaders.authorization !== `Bearer ${accessToken}`) {
+      error = {
+        'code':'bad_request.invalid_token',
+        'message':'Token is invalid',
+      };
+    }
+
+    if (error) {
+      return new Response(400, {}, error);
+    }
+
 		return {
 			'authenticated': true,
 			'client_id': 'the_client_id',
@@ -27,7 +42,20 @@ export default function() {
 		};
 	});
 
-  this.get('https://api.monzo.com/accounts', () => {
+  this.get('https://api.monzo.com/accounts', (schema, request) => {
+    let error = undefined;
+
+    if (request.requestHeaders.authorization !== `Bearer ${accessToken}`) {
+      error = {
+        'code':'bad_request.invalid_token',
+        'message':'Token is invalid',
+      };
+    }
+
+    if (error) {
+      return new Response(400, {}, error);
+    }
+
     return {
       'accounts': [
         {
@@ -42,5 +70,29 @@ export default function() {
         }
       ]
     };
+  });
+
+  this.get('https://api.monzo.com/transactions', (schema, request) => {
+    let error = undefined;
+
+    if (request.requestHeaders.authorization !== `Bearer ${accessToken}`) {
+      error = {
+        'code':'bad_request.invalid_token',
+        'message':'Token is invalid',
+      };
+    }
+
+    if (!request.queryParams['account_id'].length) {
+      error = {
+        'code':'bad_request.no_account_id',
+        'message':'Account id was not specified',
+      };
+    }
+
+    if (error) {
+      return new Response(400, {}, error);
+    }
+
+    return schema['monzoTransactions'].all();
   });
 }

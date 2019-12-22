@@ -1,6 +1,7 @@
 import Base from 'ember-simple-auth/authenticators/base';
 import RSVP from 'rsvp';
 import ajax from 'ember-fetch/ajax';
+import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Base.extend({
@@ -8,7 +9,7 @@ export default Base.extend({
 
   async authenticate({ code, state }) {
     let redirectUri = 'http://local-money-dashboard.com:4200/monzo-auth';
-    let { clientId, clientSecret } = this.session.get('data');
+    let { clientId, clientSecret } = get(this.session, 'data.monzo');
     if (clientSecret !== state) {
       //abort
     }
@@ -22,7 +23,6 @@ export default Base.extend({
 
     let {
       'access_token': accessToken,
-      'client_id': responseClientId,
       'expires_in': expiresIn,
       'token_type': tokenType,
     } = await ajax(
@@ -33,15 +33,30 @@ export default Base.extend({
       }
     );
 
+    this.session.data.monzo.accessToken = accessToken;
+    this.session.data.monzo.expiresIn = expiresIn;
+    this.session.data.monzo.tokenType = tokenType;
+
     return {
-      accessToken,
-      clientId: responseClientId,
-      expiresIn,
-      tokenType,
     };
   },
 
   restore() {
-    return RSVP.resolve();
+    let { accessToken, clientId, expiresIn, tokenType } = get(this.session, 'data.monzo');
+
+    return RSVP.resolve({
+      accessToken,
+      clientId,
+      expiresIn,
+      tokenType,
+    });
+  },
+
+  invalidate() {
+    let { session } = this;
+
+    session.set('data.monzo', {});
+
+    return RSVP.resolve()
   },
 });

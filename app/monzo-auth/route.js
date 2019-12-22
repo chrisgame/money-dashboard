@@ -14,13 +14,13 @@ export default Route.extend({
 
   session: service(),
 
-  model(params) {
-    return this.session.authenticate('authenticator:monzo', params);
+  async model(params) {
+    return await this.session.authenticate('authenticator:monzo', params);
   },
 
   afterModel() {
     if (!Ember.production) {
-      this.redirectTo('authenticated');
+      this.transitionTo('authenticated');
     }
   },
 });

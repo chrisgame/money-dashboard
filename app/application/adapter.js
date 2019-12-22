@@ -10,7 +10,7 @@ export default RESTAdapter.extend(DataAdapterMixin, {
 	headers: computed('session.data.authenticated.accessToken', function() {
 		let headers = {};
 		if (this.session.isAuthenticated) {
-			headers['Authorization'] = `Bearer ${this.session.data.authenticated.accessToken}`;
+			headers['Authorization'] = `Bearer ${this.session.data.monzo.accessToken}`;
 		}
 
 		return headers;
@@ -22,6 +22,8 @@ export default RESTAdapter.extend(DataAdapterMixin, {
         return 'ping/whoami';
       case 'monzo/accounts':
         return 'accounts';
+      case 'monzo/transactions':
+        return 'transactions';
       default:
         return this._super(...arguments);
     }
