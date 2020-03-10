@@ -24,7 +24,9 @@ export default Component.extend({
         .style('height', `${radius/2 - radius/10}px`)
         .style('text-align', 'center')
         .style('font-family', 'helvetica')
-        .style('font-size', '32px')
+        .style('font-size', '32px');
+
+      d3.select('svg').remove();
 
       let svg = d3.select(this.element).append('svg')
           .attr('width', width)
