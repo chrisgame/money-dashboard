@@ -21,6 +21,7 @@ export default Route.extend({
       this.transitionTo('login');
     }
     return {
+      account: monzo.account,
       transactions,
     };
   },

@@ -86,7 +86,7 @@ export default Component.extend({
           let centerHtml = '';
 
           if (d.data.nodeType === 'group') {
-            centerHtml = centerHtml.concat(`<div>${d.data.payee}</div>`);
+            centerHtml = centerHtml.concat(`<div>${d.data.name}</div>`);
             centerHtml = centerHtml.concat(`<div>£${d.data.total}</div>`);
           } else if (d.data.nodeType === 'transaction') {
             centerHtml = centerHtml.concat(`<div>${d.data.name}</div>`);

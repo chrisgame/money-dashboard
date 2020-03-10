@@ -25,7 +25,7 @@ export default Factory.extend({
     return faker.company.companyName();
   },
   amount() {
-    return faker.random.number();
+    return faker.random.number({ min:-1000, max: -1 });
   },
   fees() {},
   currency() {
