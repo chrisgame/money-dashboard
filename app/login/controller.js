@@ -16,7 +16,7 @@ export default Controller.extend({
         clientSecret,
       }));
 
-      if(ENV.environment !== 'production') {
+      if (ENV['ember-cli-mirage'].enabled) {
         this.router.transitionTo('monzo-auth', {
           queryParams: {
             code: 'acbdfe',
