@@ -1,3 +1,3 @@
-import SessionStorage from 'ember-simple-auth/session-stores/session-storage';
+import LocalStorage from 'ember-simple-auth/session-stores/local-storage';
 
-export default SessionStorage.extend();
+export default LocalStorage.extend();

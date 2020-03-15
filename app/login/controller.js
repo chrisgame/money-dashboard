@@ -11,10 +11,10 @@ export default Controller.extend({
       let { clientId, clientSecret } = this;
       let redirectUri = 'http://local-money-dashboard.com:4200/monzo-auth';
 
-      this.session.data.monzo = {
+      localStorage.setItem('monzo', JSON.stringify({
         clientId,
         clientSecret,
-      };
+      }));
 
       if(ENV.environment !== 'production') {
         this.router.transitionTo('monzo-auth', {

@@ -9,10 +9,7 @@ export default Base.extend({
 
   async authenticate({ code, state }) {
     let redirectUri = 'http://local-money-dashboard.com:4200/monzo-auth';
-    let { clientId, clientSecret } = get(this.session, 'data.monzo');
-    if (clientSecret !== state) {
-      //abort
-    }
+    let { clientId, clientSecret } = JSON.parse(localStorage.getItem('monzo'));
 
     let formData = new FormData();
     formData.append('grant_type', 'authorization_code');
