@@ -9,44 +9,52 @@ export default Base.extend({
 
   async authenticate({ code, state }) {
     let redirectUri = 'http://local-money-dashboard.com:4200/monzo-auth';
-    let { clientId, clientSecret } = JSON.parse(localStorage.getItem('monzo'));
+    let { accessToken, clientId, clientSecret } = JSON.parse(localStorage.getItem('monzo'));
 
-    let formData = new FormData();
-    formData.append('grant_type', 'authorization_code');
-    formData.append('client_id', clientId);
-    formData.append('client_secret', clientSecret);
-    formData.append('redirect_uri', redirectUri);
-    formData.append('code', code);
+    if (!accessToken && code) {
+      let formData = new FormData();
+      formData.append('grant_type', 'authorization_code');
+      formData.append('client_id', clientId);
+      formData.append('client_secret', clientSecret);
+      formData.append('redirect_uri', redirectUri);
+      formData.append('code', code);
 
-    let {
-      'access_token': accessToken,
-      'expires_in': expiresIn,
-      'token_type': tokenType,
-    } = await ajax(
-      'https://api.monzo.com/oauth2/token',
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+      let tokenResponse = await ajax(
+        'https://api.monzo.com/oauth2/token',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
 
-    this.session.data.monzo.accessToken = accessToken;
-    this.session.data.monzo.expiresIn = expiresIn;
-    this.session.data.monzo.tokenType = tokenType;
+      let {
+        'access_token': accessToken,
+        'expires_in': expiresIn,
+        'token_type': tokenType,
+        'user_id': userId,
+        scope,
+      } = tokenResponse;
 
-    return {
-    };
+      this.session.data.monzo = {
+        accessToken,
+        expiresIn,
+        tokenType,
+        userId,
+        scope
+      };
+    }
+
+    return RSVP.resolve();
   },
 
   restore() {
-    let { accessToken, clientId, expiresIn, tokenType } = get(this.session, 'data.monzo');
+    let { accessToken, clientId, expiresIn, tokenType, userId, scope } = get(this.session, 'data.monzo');
 
-    return RSVP.resolve({
-      accessToken,
-      clientId,
-      expiresIn,
-      tokenType,
-    });
+    if (accessToken) {
+      return RSVP.resolve();
+    }
+
+    return RSVP.reject();
   },
 
   invalidate() {

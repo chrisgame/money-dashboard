@@ -15,7 +15,7 @@ export default Component.extend({
       description: account.description,
       created: account.created,
     });
-    this.router.transitionTo('authenticated.transactions', dasherize(account.description));
+    this.router.transitionTo('authenticated.accounts.transactions', dasherize(account.description));
   },
 
   actions: {
@@ -25,7 +25,7 @@ export default Component.extend({
         description: account.description,
         created: account.created,
       });
-      this.router.transitionTo('authenticated.transactions', dasherize(account.description));
+      this.router.transitionTo('authenticated.accounts.transactions', dasherize(account.description));
     },
   },
 });
