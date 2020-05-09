@@ -13,9 +13,10 @@ export default Component.extend({
     this.get('session').set('data.monzo.account', {
       id: account.id,
       description: account.description,
+      personalizedDescription: account.personalizedDescription,
       created: account.created,
     });
-    this.router.transitionTo('authenticated.accounts.transactions', dasherize(account.description));
+    this.router.transitionTo('authenticated.accounts.transactions', dasherize(account.personalizedDescription));
   },
 
   actions: {
@@ -23,9 +24,10 @@ export default Component.extend({
       this.get('session').set('data.monzo.account', {
         id: account.id,
         description: account.description,
+        personalizedDescription: account.personalizedDescription,
         created: account.created,
       });
-      this.router.transitionTo('authenticated.accounts.transactions', dasherize(account.description));
+      this.router.transitionTo('authenticated.accounts.transactions', dasherize(account.personalizedDescription));
     },
   },
 });

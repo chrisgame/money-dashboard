@@ -61,11 +61,43 @@ export default function() {
         {
           'id': 'acc_00009237aqC8c5umZmrRdh',
           'description': "Peter Pan's Account",
+          'owners': [
+            {
+              'user_id': 'acc_00009237aqC8c5umZmrRdh',
+              'preferred_name': 'Peter Pan',
+              'preferred_first_name': 'Peter'
+            }
+          ],
           'created': '2015-11-13T12:17:42Z'
         },
         {
           'id': 'acc_01009237sdfdsfdsw4rwefxsew',
           'description': "Captain Hook's Account",
+          'owners': [
+            {
+              'user_id': 'acc_01009237sdfdsfdsw4rwefxsew',
+              'preferred_name': 'Captain Hook',
+              'preferred_first_name': 'Hook'
+            },
+          ],
+          'created': '2016-11-13T12:17:42Z'
+        },
+        {
+          'id': 'acc_01008383sdasdadashjgjggdkd',
+          'type': 'uk_retail_joint',
+          'description': "Joint account between user acc_00009237aqC8c5umZmrRdh and user acc_01009237sdfdsfdsw4rwefxsew",
+          'owners': [
+            {
+              'user_id': 'acc_00009237aqC8c5umZmrRdh',
+              'preferred_name': 'Peter Pan',
+              'preferred_first_name': 'Peter'
+            },
+            {
+              'user_id': 'acc_01009237sdfdsfdsw4rwefxsew',
+              'preferred_name': 'Captain Hook',
+              'preferred_first_name': 'Hook'
+            },
+          ],
           'created': '2016-11-13T12:17:42Z'
         }
       ]
