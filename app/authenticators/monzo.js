@@ -48,7 +48,7 @@ export default Base.extend({
   },
 
   restore() {
-    let { accessToken, clientId, expiresIn, tokenType, userId, scope } = get(this.session, 'data.monzo');
+    let { accessToken } = JSON.parse(localStorage.getItem('ember_simple_auth-session')).monzo;
 
     if (accessToken) {
       return RSVP.resolve();
