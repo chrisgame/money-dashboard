@@ -4,7 +4,7 @@ import faker from 'faker';
 const CATEGORIES = [
   'transport',
   'groceries',
-  'eating out',
+  'eating_out',
   'finances',
   'bills',
   'entertainment',
