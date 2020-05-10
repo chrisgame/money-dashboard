@@ -16,7 +16,7 @@ export default Route.extend({
     let transactions;
 
     try {
-      transactions = await this.store.query('monzo/transactions', { 'account_id': id });
+      transactions = await this.store.query('monzo/transactions', { 'account_id': id, 'expand[]': 'merchant' });
     } catch(e) {
       this.transitionTo('login');
     }

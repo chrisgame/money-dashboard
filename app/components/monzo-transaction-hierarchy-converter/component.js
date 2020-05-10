@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+import { capitalize } from '@ember/string';
 import { computed } from '@ember/object';
 import d3 from 'd3';
 
@@ -20,30 +21,39 @@ export default Component.extend({
 
     let root = { name: this.get('rootName'), parent: null };
 
-    let categories = tabularData.filter(transaction => transaction.amount < 0).mapBy('category').uniq().sort();
+    let categories = tabularData.filter(transaction => transaction.amount < 0).mapBy('merchant.category').uniq().sort();
     let parents = categories.map(category => {
-      let childrenTotal = Math.abs(tabularData.filterBy('category', category).reduce((sum, current) => {
-          return sum + parseFloat(current.get('amount'));
-        }, 0)).toFixed(2);
+      let childrenTotal = Math.abs(tabularData.filterBy('merchant.category', category).reduce((sum, current) => {
+          return sum + parseFloat(current.get('amount') * 1);
+        }, 0)) / 100;
 
       return {
         nodeType: 'group',
-        name: category,
+        name: this.capitalizeString(category),
         parent: this.get('rootName'),
-        category: category,
-        total: childrenTotal
+        category: this.capitalizeString(category),
+        total: childrenTotal.toFixed(2)
       };
     });
 
     let children = tabularData.filter(transaction => transaction.amount < 0).map(transaction => {
-      let { amount, category, description } = transaction;
+      let { amount, merchant, smartDescription } = transaction;
       let direction = amount < 0 ? 'outgoing' : 'incoming';
       let unsignedAmount = amount * -1;
+      let adjustedAmount = unsignedAmount / 100
+      let parentString;
+
+      if (merchant && merchant.category) {
+        parentString = merchant.category;
+      } else {
+        parentString = 'general';
+      }
+
       return {
         nodeType: 'transaction',
-        name: description,
-        parent: category,
-        value: unsignedAmount,
+        name: smartDescription,
+        parent: this.capitalizeString(parentString),
+        value: adjustedAmount.toFixed(2),
         direction
       }
     });
@@ -73,4 +83,11 @@ export default Component.extend({
     return d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, parentsLength + 1));
   }),
 
+  capitalizeString(string) {
+    if (!string) {
+      return string;
+    }
+
+    return string.split('_').map(text => text.capitalize()).join(' ');
+  },
 });

@@ -13,104 +13,44 @@ const CATEGORIES = [
   'general',
   'expenses',
   'family',
-  'personal care',
+  'personal_care',
   'charity'
 ];
 
 export default Factory.extend({
-  created() {
-    return faker.date.past();
-  },
-  description() {
-    return faker.company.companyName();
+  accountBalance() {
+    return 0;
   },
   amount() {
     return faker.random.number({ min:-1000, max: -1 });
   },
-  fees() {},
+  created() {
+    return faker.date.past();
+  },
   currency() {
     return faker.finance.currencyCode();
   },
+  description() {
+    return `${faker.company.companyName()} ${faker.finance.currencyCode()}`;
+  },
   merchant() {
+    return {
+      logo: 'https://pbs.twimg.com/profile_images/527043602623389696/68_SgUWJ.jpeg',
+      emoji: '😀',
+      name: faker.company.companyName(),
+      category: faker.random.arrayElement(CATEGORIES),
+    };
+  },
+  metadata() {
     return null;
   },
   notes() {
     return faker.random.words();
-  },
-  metadata() {
-    return {
-      notes: faker.random.words(),
-      originator_type: 'prepaid-balance-migration',
-      prepaid_bridge_transfer_id: 'prepaidtransfer_00009TBy6079mVSGGRA1hp'
-    }
-  },
-  labels() {
-    return null;
-  },
-  accountBalance() {
-    return 0;
-  },
-  attachments() {
-    return [];
-  },
-  international() {
-    return null;
-  },
-  category() {
-    return faker.random.arrayElement(CATEGORIES);
-  },
-  categories() {
-    return null;
   },
   isLoad() {
     return false;
   },
   settled() {
     return faker.date.past();
-  },
-  localAmount() {
-    return faker.random.number();
-  },
-  localCurrency() {
-    return faker.finance.currencyCode();
-  },
-  updated() {
-    return faker.date.past();
-  },
-  accountId() {
-    return 'acc_00009T9lotTzb5Bn0Vzxsv';
-  },
-  userId() {
-    return '';
-  },
-  counterparty() {
-    return {};
-  },
-  scheme() {
-    return 'prepaid-bridge';
-  },
-  dedupeId() {
-    return 'prepaid_migration:user_000095G4zjj6AGQSyLB0V7';
-  },
-  originator() {
-    return false;
-  },
-  includeInSpending() {
-    return true;
-  },
-  canBeExcludedFromBreakdown() {
-    return false;
-  },
-  canBeMadeSubscription() {
-    return false;
-  },
-  canSplitTheBill() {
-    return false;
-  },
-  canAddToTab() {
-    return false;
-  },
-  amountIsPending() {
-    false;
   },
 });
