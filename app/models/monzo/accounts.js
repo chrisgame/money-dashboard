@@ -1,4 +1,4 @@
-import Model, { attr, belongsTo } from '@ember-data/model';
+import Model, { attr } from '@ember-data/model';
 import { computed } from '@ember/object';
 
 export default Model.extend({
@@ -8,7 +8,7 @@ export default Model.extend({
   owners: attr(),
 
   personalizedDescription: computed('type,desciption,owners', function() {
-    let { type, description } = this;
+    let { type } = this;
 
     if (type === "uk_retail_joint") {
       let firstNames = this.owners.mapBy('preferred_first_name');

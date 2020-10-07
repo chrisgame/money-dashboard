@@ -1,5 +1,4 @@
 import Component from '@ember/component';
-import { capitalize } from '@ember/string';
 import { computed } from '@ember/object';
 import d3 from 'd3';
 

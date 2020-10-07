@@ -1,13 +1,12 @@
 import Base from 'ember-simple-auth/authenticators/base';
 import RSVP from 'rsvp';
 import ajax from 'ember-fetch/ajax';
-import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Base.extend({
   session: service(),
 
-  async authenticate({ code, state }) {
+  async authenticate({ code, state }) {  // eslint-disable-line no-unused-vars
     let redirectUri = 'http://local-money-dashboard.com:4200/monzo-auth';
     let { accessToken, clientId, clientSecret } = JSON.parse(localStorage.getItem('monzo'));
 
