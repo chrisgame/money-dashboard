@@ -1,0 +1,8 @@
+Client Id {{model.profile.clientId}}
+User Id {{model.profile.userId}}
+
+{{account-switcher
+  selectedAccount=this.session.data.monzo.account
+  accounts=accounts
+  onChangeAccount=(action "redirectToAccount")
+}}

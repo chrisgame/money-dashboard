@@ -1,0 +1,10 @@
+<form {{action "authenticate" on="submit"}}>
+  <label for="clientId">Client Id</label>
+  {{input id="clientId" placeholder="Enter Client Id" value=clientId}}
+  <label for="clientSecret">Client Secret</label>
+  {{input id="clientSecret" placeholder="Enter Client Secret" value=clientSecret}}
+  <button type="submit">Login</button>
+  {{#if errorMessage}}
+    <p>{{errorMessage}}</p>
+  {{/if}}
+</form>

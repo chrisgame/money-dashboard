@@ -1,0 +1,10 @@
+{{#monzo-transaction-hierarchy-converter
+  rootName=this.attrs.account.description
+  tabularData=this.attrs.transactions
+  as | convertedData |
+}}
+  {{starburst-chart
+    data=convertedData.hierarchy
+    color=convertedData.colorScale
+  }}
+{{/monzo-transaction-hierarchy-converter}}

@@ -24,7 +24,9 @@ export default Component.extend({
         .style('height', `${radius/2 - radius/10}px`)
         .style('text-align', 'center')
         .style('font-family', 'helvetica')
-        .style('font-size', '32px')
+        .style('font-size', '32px');
+
+      d3.select('svg').remove();
 
       let svg = d3.select(this.element).append('svg')
           .attr('width', width)
@@ -86,7 +88,7 @@ export default Component.extend({
           let centerHtml = '';
 
           if (d.data.nodeType === 'group') {
-            centerHtml = centerHtml.concat(`<div>${d.data.payee}</div>`);
+            centerHtml = centerHtml.concat(`<div>${d.data.name}</div>`);
             centerHtml = centerHtml.concat(`<div>£${d.data.total}</div>`);
           } else if (d.data.nodeType === 'transaction') {
             centerHtml = centerHtml.concat(`<div>${d.data.name}</div>`);

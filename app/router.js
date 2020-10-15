@@ -7,4 +7,13 @@ export default class Router extends EmberRouter {
 }
 
 Router.map(function() {
+  this.route('login');
+  this.route('monzo-auth');
+  this.route('authenticated', { path: '' }, function() {
+    this.route('request-access-in-app');
+    this.route('accounts', function() {
+      this.route('transactions', { path: '/:account_description/transactions' });
+    });
+  });
+  this.route('statement-upload');
 });
