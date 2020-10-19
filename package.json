@@ -60,7 +60,7 @@
     "edition": "octane"
   },
   "dependencies": {
-    "ember-power-select": "^4.0.0-beta.4",
+    "ember-power-select": "^4.0.5",
     "faker": "^4.1.0"
   }
 }
