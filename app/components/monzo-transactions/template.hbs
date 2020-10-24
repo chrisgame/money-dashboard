@@ -1,10 +1,11 @@
-{{#monzo-transaction-hierarchy-converter
-  rootName=this.attrs.account.description
-  tabularData=this.attrs.transactions
+{{#monzo-transaction-bucketer
+  tabularData=@transactions
   as | convertedData |
 }}
-  {{starburst-chart
-    data=convertedData.hierarchy
+  {{line-chart
+    width=this.width
+    height=this.lineChartHeight
+    data=convertedData.data
     color=convertedData.colorScale
   }}
-{{/monzo-transaction-hierarchy-converter}}
+{{/monzo-transaction-bucketer}}
