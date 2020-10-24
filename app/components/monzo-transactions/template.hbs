@@ -1,3 +1,15 @@
+{{#monzo-transaction-bucketer
+  tabularData=@transactions
+  as | convertedData |
+}}
+  {{line-chart
+    width=this.width
+    height=this.lineChartHeight
+    data=convertedData.data
+    color=convertedData.colorScale
+  }}
+{{/monzo-transaction-bucketer}}
+
 {{#monzo-transaction-hierarchy-converter
   rootName=this.attrs.account.description
   tabularData=this.attrs.transactions
