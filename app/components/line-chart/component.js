@@ -2,6 +2,8 @@ import { tracked } from '@glimmer/tracking';
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import d3 from 'd3';
+import { DateTime } from 'luxon';
+import { capitalize } from '@ember/string';
 
 export default class LineChartComponent extends Component {
   @action
@@ -10,6 +12,7 @@ export default class LineChartComponent extends Component {
     const margin = ({top: 20, right: 0, bottom: 30, left: 40});
     const height = elementHeight;
     const width = elementWidth;
+		const tooltip = d3.select('#tooltip');
 
     if (!elementHeight || !elementWidth) {
       return;
@@ -54,8 +57,62 @@ export default class LineChartComponent extends Component {
       .selectAll('path')
       .data(data.series)
       .join('path')
-        .style('mix-blend-mode', 'multiply')
         .attr('stroke', d => color(d.name))
         .attr('d', d => line(d.values));
+
+		const tooltipLine = svg.append('line');
+  	const tipBox = svg.append('rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('opacity', 0)
+        .on('mousemove', () => {
+					let dateAtMousePosition = x.invert(d3.mouse(tipBox.node())[0]);
+          let roundedDateAtMousePosition = nearestMonthTo(dateAtMousePosition);
+					let index = data.dates.findIndex(date => DateTime.fromJSDate(date).toFormat('yyyy-MM') === DateTime.fromJSDate(roundedDateAtMousePosition).toFormat('yyyy-MM'));
+
+					tooltipLine.attr('stroke', 'black')
+						.attr('x1', x(roundedDateAtMousePosition))
+						.attr('x2', x(roundedDateAtMousePosition))
+						.attr('y1', margin.top)
+						.attr('y2', height - margin.bottom);
+
+          let tooltipX = x(roundedDateAtMousePosition) + 20;
+          let tooltipY = y(d3.mouse(tipBox.node())[0]);
+
+					tooltip
+						.style('display', 'block')
+            .style('left', `${tooltipX}px`)
+            .style('top', `${tooltipY}px`)
+            .selectAll('div')
+            .html(() => {
+              let totals = data.series.reduce((acc, obj) => {
+                let value = obj.values[index];
+                if (value > 0) {
+                  acc.push({ name: capitalize(obj.name.replace('_', ' ')), value: obj.values[index]});
+                }
+
+                return acc;
+              }, []).sort((a, b) => (b.value - a.value));
+
+              return totals.map((total) => {
+                return `<div>${total.name}: ${total.value}</div>`;
+              }).join('');
+            });
+				})
+        .on('mouseout', () => {
+          if (tooltip) tooltip.style('display', 'none');
+          if (tooltipLine) tooltipLine.attr('stroke', 'none');
+				});
   }
 }
+
+function nearestMonthTo(date) {
+  let parsedDate = DateTime.fromJSDate(date);
+  let resetDate = parsedDate.set({ day: 1, hour: 0, minute: 0, second: 1});
+
+  if ( parsedDate.day > (parsedDate.daysInMonth / 2)) {
+    return resetDate.plus({ months: 1 }).toJSDate();
+  }
+
+  return resetDate.toJSDate();
+};
