@@ -23,14 +23,14 @@ export default class MonzoTransactionBucketerComponent extends Component {
     let minDate = DateTime.min(...dates);
     let maxDate = DateTime.max(...dates);
 
-    let allDates = d3.timeDay.every(1).range(
+    let allDates = d3.timeMonth.every(1).range(
         minDate.toJSDate(),
         maxDate.toJSDate(),
-      ).map(date => DateTime.fromJSDate(date).toFormat('yyyy-MM-dd'));
+      ).map(date => DateTime.fromJSDate(date).toFormat('yyyy-MM'));
 
     let series = allDates.reduce((acc, date) => {
       let transactions = tabularData.filter(transaction => {
-        let a = transaction.createdDate.toFormat('yyyy-MM-dd');
+        let a = transaction.createdDate.toFormat('yyyy-MM');
         let b = date;
 
         return a === b;
@@ -49,7 +49,7 @@ export default class MonzoTransactionBucketerComponent extends Component {
       return acc;
     }, categoryList);
 
-    return { series, dates: allDates.map(date => DateTime.fromFormat(date, 'yyyy-MM-dd').toJSDate()) };
+    return { series, dates: allDates.map(date => DateTime.fromFormat(date, 'yyyy-MM').toJSDate()) };
   }
 
   get colorScale() {
