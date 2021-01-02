@@ -16,12 +16,12 @@ export default class MonzoTransactionBucketerComponent extends Component {
 
     let categoryList = categories.map(category => ({ name: category, values: [] }));
 
-    let dates = tabularData.map(
+    let transactionDates = tabularData.map(
       transaction => transaction.createdDate
     )
 
-    let minDate = DateTime.min(...dates);
-    let maxDate = DateTime.max(...dates);
+    let minDate = DateTime.min(...transactionDates);
+    let maxDate = DateTime.max(...transactionDates);
 
     let allDates = d3.timeMonth.every(1).range(
         minDate.toJSDate(),
@@ -49,10 +49,31 @@ export default class MonzoTransactionBucketerComponent extends Component {
       return acc;
     }, categoryList);
 
-    return { series, dates: allDates.map(date => DateTime.fromFormat(date, 'yyyy-MM').toJSDate()) };
+		let dates = allDates.map(date => DateTime.fromFormat(date, 'yyyy-MM').toJSDate());
+
+		logValues(dates, series);
+
+    return { series, dates };
   }
 
   get colorScale() {
     return d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, 11));
   }
+}
+
+function logValues(dates, series) {
+	let modifiedValues = dates.reduce((acc, date) => {
+		if (!acc.date) {
+			acc.date = [];
+		}
+
+		acc.date.push(DateTime.fromJSDate(date).toFormat('yyyy-MM'));
+		series.map((series) => {
+			acc[series.name] = series.values;
+		});
+
+		return acc;
+	}, []);
+
+	console.table(modifiedValues);
 }
