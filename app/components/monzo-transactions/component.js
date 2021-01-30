@@ -9,7 +9,7 @@ export default Component.extend({
   },
 
   width: computed(function() {
-    return Math.min(window.innerWidth, window.innerHeight) - 20;
+    return window.innerWidth - 20;
   }),
 
   lineChartHeight: computed('width', function() {
