@@ -9,9 +9,10 @@ export default class LineChartComponent extends Component {
   @action
   drawChart(element, [elementHeight, elementWidth, data]) {
     const color = this.args.color;
-    const margin = ({top: 20, right: 0, bottom: 30, left: 40});
+    const margin = ({top: 20, right: 0, bottom: 30, left: 20});
     const height = elementHeight;
     const width = elementWidth;
+    const yTickGutter = 40;
 		const tooltip = d3.select('#tooltip');
 
     if (!elementHeight || !elementWidth) {
@@ -21,7 +22,7 @@ export default class LineChartComponent extends Component {
 
     const x = d3.scaleUtc()
       .domain(d3.extent(data.dates))
-      .range([margin.left, width - margin.right]);
+      .range([margin.left, width - margin.right - yTickGutter]);
 
     const y = d3.scaleLinear()
       .domain([0, d3.max(data.series, d => d3.max(d.values))]).nice()
@@ -37,8 +38,8 @@ export default class LineChartComponent extends Component {
       .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
 
     const yAxis = g => g
-      .attr('transform', `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y))
+      .attr('transform', `translate(${width - yTickGutter},0)`)
+      .call(d3.axisRight(y))
       .call(g => g.select('.domain').remove())
       .call(g => g.select('.tick:last-of-type text').clone()
         .attr('x', 3)
