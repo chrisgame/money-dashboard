@@ -62,6 +62,11 @@ export default class LineChartComponent extends Component {
         .attr('d', d => line(d.values));
 
 		const tooltipLine = svg.append('line');
+		const tooltipDots = svg.append('g')
+      .selectAll('circle')
+      .data(data.series)
+      .join('circle');
+
   	const tipBox = svg.append('rect')
         .attr('width', width)
         .attr('height', height)
@@ -76,6 +81,13 @@ export default class LineChartComponent extends Component {
 						.attr('x2', x(roundedDateAtMousePosition))
 						.attr('y1', margin.top)
 						.attr('y2', height - margin.bottom);
+
+          tooltipDots.attr('r', 4)
+            .style('display', 'block')
+            .attr('fill', d => color(d.name))
+            .attr('stroke', 'white')
+            .attr('cx', () => x(roundedDateAtMousePosition))
+            .attr('cy', d => y(d.values[index]));
 
           let tooltipX = x(roundedDateAtMousePosition) + 20;
           let tooltipY = y(d3.mouse(tipBox.node())[0]);
@@ -103,6 +115,7 @@ export default class LineChartComponent extends Component {
         .on('mouseout', () => {
           if (tooltip) tooltip.style('display', 'none');
           if (tooltipLine) tooltipLine.attr('stroke', 'none');
+          if (tooltipDots) tooltipDots.style('display', 'none');
 				});
   }
 }
