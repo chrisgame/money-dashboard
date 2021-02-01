@@ -13,7 +13,13 @@ export default class LineChartComponent extends Component {
     const height = elementHeight;
     const width = elementWidth;
     const yTickGutter = 40;
-		const tooltip = d3.select('#tooltip');
+    const dataPointDotRadius = 6;
+    const legendWidth = 200;
+    const defaultLegendOffset = 50;
+    const legendChartOffset = 10;
+    const legendTextPadding = 5;
+    const legendChartBarStroke = 2;
+		const legend = d3.select('#legend');
 
     if (!elementHeight || !elementWidth) {
       return;
@@ -22,11 +28,19 @@ export default class LineChartComponent extends Component {
 
     const x = d3.scaleUtc()
       .domain(d3.extent(data.dates))
-      .range([margin.left, width - margin.right - yTickGutter]);
+      .range([margin.left, width - margin.right - yTickGutter - legendWidth]);
 
     const y = d3.scaleLinear()
       .domain([0, d3.max(data.series, d => d3.max(d.values))]).nice()
       .range([height - margin.bottom, margin.top]);
+
+    const legendX = d3.scaleLinear()
+      .domain([0, d3.max(data.series, d => d3.max(d.values))])
+      .range([width - legendWidth + legendChartOffset - margin.right, width - margin.right - legendChartBarStroke]);
+
+    const legendY = d3.scaleBand()
+      .domain(data.series.map(item => item.name))
+      .range([margin.top, height - margin.bottom]);
 
     const line = d3.line()
       .defined(d => !isNaN(d))
@@ -38,7 +52,7 @@ export default class LineChartComponent extends Component {
       .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
 
     const yAxis = g => g
-      .attr('transform', `translate(${width - yTickGutter},0)`)
+      .attr('transform', `translate(${width - yTickGutter - legendWidth},0)`)
       .call(d3.axisRight(y))
       .call(g => g.select('.domain').remove())
       .call(g => g.select('.tick:last-of-type text').clone()
@@ -61,61 +75,98 @@ export default class LineChartComponent extends Component {
         .attr('stroke', d => color(d.name))
         .attr('d', d => line(d.values));
 
-		const tooltipLine = svg.append('line');
-		const tooltipDots = svg.append('g')
+    const alphabetisedDataSeries = data.series.sort((a, b) => a.name.localeCompare(b.name));
+    legendX.domain([0, d3.max(alphabetisedDataSeries, d => d3.max(d.values))]);
+    legendY.domain(alphabetisedDataSeries.map(item => item.name));
+
+    const defaultLegendDots = svg.append('g')
+      .selectAll('circle')
+      .data(data.series)
+      .join('circle')
+      .attr('cx', legendX(0) + defaultLegendOffset)
+      .attr('cy', d => legendY(d.name) + legendY.bandwidth() / 2)
+      .attr('r', dataPointDotRadius)
+      .style('fill', (d) => color(d.name));
+
+    const defaultLegendText = svg.append('g')
+      .selectAll('text')
+      .data(data.series)
+      .join('text')
+      .attr('x', legendX(0) + legendTextPadding + dataPointDotRadius + defaultLegendOffset)
+      .attr('y', d => legendY(d.name) + legendY.bandwidth() / 2 + legendTextPadding)
+      .text((d) => formatText(d.name));
+
+    const legendChartBars = svg.append('g')
+      .selectAll('rect')
+      .data(data.series)
+      .join('rect');
+
+    const legendChartText = svg.append('g')
+      .selectAll('text')
+      .data(data.series)
+      .join('text');
+
+		const dataPointLine = svg.append('line');
+		const dataPointDots = svg.append('g')
       .selectAll('circle')
       .data(data.series)
       .join('circle');
 
-  	const tipBox = svg.append('rect')
-        .attr('width', width)
+    const mouseOverLineChartBox = svg.append('rect')
+        .attr('width', width - margin.right - yTickGutter - legendWidth)
         .attr('height', height)
         .attr('opacity', 0)
         .on('mousemove', () => {
-					let dateAtMousePosition = x.invert(d3.mouse(tipBox.node())[0]);
+					let dateAtMousePosition = x.invert(d3.mouse(mouseOverLineChartBox.node())[0]);
           let roundedDateAtMousePosition = nearestMonthTo(dateAtMousePosition);
 					let index = data.dates.findIndex(date => DateTime.fromJSDate(date).toFormat('yyyy-MM') === DateTime.fromJSDate(roundedDateAtMousePosition).toFormat('yyyy-MM'));
 
-					tooltipLine.attr('stroke', 'black')
+          let sortedDataSeries = data.series.sort((a, b) => byValueAtIndex(a, b, index));
+          legendX.domain([0, d3.max(sortedDataSeries, d => d3.max(d.values))]);
+          legendY.domain(sortedDataSeries.map(item => item.name));
+
+					dataPointLine.attr('stroke', 'black')
 						.attr('x1', x(roundedDateAtMousePosition))
 						.attr('x2', x(roundedDateAtMousePosition))
 						.attr('y1', margin.top)
 						.attr('y2', height - margin.bottom);
 
-          tooltipDots.attr('r', 4)
+          dataPointDots.attr('r', dataPointDotRadius)
             .style('display', 'block')
             .attr('fill', d => color(d.name))
             .attr('stroke', 'white')
             .attr('cx', () => x(roundedDateAtMousePosition))
             .attr('cy', d => y(d.values[index]));
 
-          let tooltipX = x(roundedDateAtMousePosition) + 20;
-          let tooltipY = y(d3.mouse(tipBox.node())[0]);
+          if (defaultLegendText) defaultLegendText.style('display', 'none');
+          if (defaultLegendDots) defaultLegendDots.style('display', 'none');
 
-					tooltip
-						.style('display', 'block')
-            .style('left', `${tooltipX}px`)
-            .style('top', `${tooltipY}px`)
-            .selectAll('div')
-            .html(() => {
-              let totals = data.series.reduce((acc, obj) => {
-                let value = obj.values[index];
-                if (value > 0) {
-                  acc.push({ name: capitalize(obj.name.replace('_', ' ')), value: obj.values[index]});
-                }
+          legendChartBars.style('display', 'block')
+            .attr('stroke', d => color(d.name))
+            .attr('stroke-width', legendChartBarStroke)
+            .attr('stroke-opacity', 1)
+            .attr('fill', d => color(d.name))
+            .attr('fill-opacity', 0.7)
+            .attr('x', legendX(0))
+            .attr('y', d => legendY(d.name))
+            .attr('height', legendY.bandwidth() - legendChartBarStroke)
+            .attr('width', d => legendX(d.values[index]) - legendX(0));
 
-                return acc;
-              }, []).sort((a, b) => (b.value - a.value));
-
-              return totals.map((total) => {
-                return `<div>${total.name}: ${total.value}</div>`;
-              }).join('');
-            });
+          legendChartText.style('display', 'block')
+              .attr('x', legendX(0) + legendTextPadding)
+              .attr('y', d => legendY(d.name) + legendY.bandwidth() / 2 + legendTextPadding)
+              .text((d) => {
+                let value = d.values[index];
+                return value ? `${formatText(d.name)}: ${value}` : '';
+              });
 				})
         .on('mouseout', () => {
-          if (tooltip) tooltip.style('display', 'none');
-          if (tooltipLine) tooltipLine.attr('stroke', 'none');
-          if (tooltipDots) tooltipDots.style('display', 'none');
+          if (dataPointLine) dataPointLine.attr('stroke', 'none');
+          if (dataPointDots) dataPointDots.style('display', 'none');
+          if (legendChartBars) legendChartBars.style('display', 'none');
+          if (legendChartText) legendChartText.style('display', 'none');
+          if (defaultLegendText) defaultLegendText.style('display', 'block');
+          if (defaultLegendDots) defaultLegendDots.style('display', 'block');
 				});
   }
 }
@@ -130,3 +181,13 @@ function nearestMonthTo(date) {
 
   return resetDate.toJSDate();
 };
+
+function formatText(text) {
+  return capitalize(text).replaceAll('_', ' ');
+}
+function byValueAtIndex(a, b, index) {
+  let aValue = a.values[index];
+  let bValue = b.values[index];
+
+  return bValue - aValue;
+}
