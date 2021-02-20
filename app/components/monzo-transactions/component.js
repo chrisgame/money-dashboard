@@ -15,7 +15,7 @@ export default Component.extend({
   lineChartHeight: computed('width', function() {
     let width = this.get('width');
 
-    return width / 3;
+    return width / 2;
   }),
 
   colorScale: computed('accounts', function() {
