@@ -22,4 +22,24 @@ export default Component.extend({
     let uniqDescriptions = this.store.peekAll('transaction').filterBy('direction', 'outgoing').mapBy('category').uniq().sort();
     return d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, uniqDescriptions.length + 1));
   }),
+
+  convertToGbp(value) {
+    let formatter = new Intl.NumberFormat('en-GB', {
+			style: 'currency',
+			currency: 'GBP',
+			minimumFractionDigits: 2
+		});
+
+    return formatter.format(value / 100);
+  },
+
+  convertToWholeGbp(value) {
+    let formatter = new Intl.NumberFormat('en-GB', {
+			style: 'currency',
+			currency: 'GBP',
+			minimumFractionDigits: 0
+		});
+
+    return formatter.format(Math.ceil(value / 100));
+  }
 });

@@ -9,10 +9,11 @@ export default class LineChartComponent extends Component {
   @action
   drawChart(element, [elementHeight, elementWidth, data]) {
     const color = this.args.color;
+    const { formatValue, formatValueForAxis } = this.args;
     const margin = ({top: 20, right: 0, bottom: 30, left: 20});
     const height = elementHeight;
     const width = elementWidth;
-    const yTickGutter = 40;
+    const yTickGutter = 50;
     const dataPointDotRadius = 6;
     const legendWidth = 200;
     const defaultLegendOffset = 50;
@@ -53,13 +54,8 @@ export default class LineChartComponent extends Component {
 
     const yAxis = g => g
       .attr('transform', `translate(${width - yTickGutter - legendWidth},0)`)
-      .call(d3.axisRight(y))
-      .call(g => g.select('.domain').remove())
-      .call(g => g.select('.tick:last-of-type text').clone()
-        .attr('x', 3)
-        .attr('text-anchor', 'start')
-        .attr('font-weight', 'bold')
-        .text(data.y));
+      .call(d3.axisRight(y).tickFormat(value => (formatValueForAxis(value))))
+      .call(g => g.select('.domain').remove());
 
     svg.append('g').call(xAxis);
     svg.append('g').call(yAxis);
@@ -157,7 +153,7 @@ export default class LineChartComponent extends Component {
               .attr('y', d => legendY(d.name) + legendY.bandwidth() / 2 + legendTextPadding)
               .text((d) => {
                 let value = d.values[index];
-                return value ? `${formatText(d.name)}: ${value}` : '';
+                return value ? `${formatText(d.name)}: ${formatValue(value)}` : '';
               });
 				})
         .on('mouseout', () => {
