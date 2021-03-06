@@ -2,17 +2,22 @@ import Component from '@glimmer/component';
 import d3 from 'd3';
 import { DateTime } from 'luxon';
 
+const DEFAULT_CATEGORIES = ['bills', 'cash', 'charity', 'eating_out', 'entertainment', 'expenses', 'family', 'finances', 'general', 'gifts', 'groceries', 'holidays', 'personal_care', 'shopping', 'transport'];
+
 export default class MonzoTransactionBucketerComponent extends Component {
 
   get data() {
     let { tabularData } = this.args;
-    let categories = Array.from(
-      new Set(
-        tabularData.map(
-          transaction => transaction.merchant.category
+    let categories = [
+      ...DEFAULT_CATEGORIES,
+      ...Array.from(
+        new Set(
+          tabularData.map(
+            transaction => transaction.merchant.category
+          )
         )
       )
-    )
+    ].uniq();
 
     let categoryList = categories.map(category => ({ name: category, values: [] }));
 
@@ -57,7 +62,9 @@ export default class MonzoTransactionBucketerComponent extends Component {
   }
 
   get colorScale() {
-    return d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, 11));
+    return d3.scaleOrdinal()
+      .domain(DEFAULT_CATEGORIES)
+      .range(['#5fbedf', '#7cf8fb', '#6a7482', '#aada72', '#9f5ef7', '#b47a5e', '#6083d4', '#5fcc8b', '#9fa5b1', '#bd608e', '#eec074', '#f3a488', '#ed808e', '#ec5fab', '#60a1b1']);
   }
 }
 

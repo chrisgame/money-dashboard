@@ -14,7 +14,8 @@ const CATEGORIES = [
   'expenses',
   'family',
   'personal_care',
-  'charity'
+  'charity',
+  'cash'
 ];
 
 export default Factory.extend({
