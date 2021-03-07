@@ -1,5 +1,7 @@
 {{#monzo-transaction-bucketer
   tabularData=@transactions
+  outgoingsOnly=true
+  categoryTransactionsOnly=true
   as | convertedData |
 }}
   {{line-chart
