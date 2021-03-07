@@ -6,13 +6,36 @@ const DEFAULT_CATEGORIES = ['bills', 'cash', 'charity', 'eating_out', 'entertain
 
 export default class MonzoTransactionBucketerComponent extends Component {
 
+  get hasOutgoingsOnly() {
+    return this.args.outgoingsOnly;
+  }
+
+  get hasCategoryTransactionsOnly() {
+    return this.args.categoryTransactionsOnly;
+  }
+
+  get filteredData() {
+    return this.args.tabularData.reduce((acc, transaction) => {
+      if (transaction.amount > 0 && this.hasOutgoingsOnly) {
+        return acc;
+      }
+
+      if (!transaction.merchant?.category && this.hasCategoryTransactionsOnly) {
+        return acc;
+      }
+
+      acc.pushObject(transaction);
+
+      return acc;
+    }, []);
+  }
+
   get data() {
-    let { tabularData } = this.args;
     let categories = [
       ...DEFAULT_CATEGORIES,
       ...Array.from(
         new Set(
-          tabularData.map(
+          this.filteredData.map(
             transaction => transaction.merchant.category
           )
         )
@@ -21,7 +44,7 @@ export default class MonzoTransactionBucketerComponent extends Component {
 
     let categoryList = categories.map(category => ({ name: category, values: [] }));
 
-    let transactionDates = tabularData.map(
+    let transactionDates = this.filteredData.map(
       transaction => transaction.createdDate
     )
 
@@ -34,7 +57,7 @@ export default class MonzoTransactionBucketerComponent extends Component {
       ).map(date => DateTime.fromJSDate(date).toFormat('yyyy-MM'));
 
     let series = allDates.reduce((acc, date) => {
-      let transactions = tabularData.filter(transaction => {
+      let transactions = this.filteredData.filter(transaction => {
         let a = transaction.createdDate.toFormat('yyyy-MM');
         let b = date;
 
