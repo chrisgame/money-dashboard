@@ -4,8 +4,13 @@ import { action } from '@ember/object';
 import d3 from 'd3';
 import { DateTime } from 'luxon';
 import { capitalize } from '@ember/string';
+import { guidFor } from '@ember/object/internals';
 
 export default class LineChartComponent extends Component {
+  get chartId() {
+    return `${guidFor(this)}-chart`;
+  }
+
   @action
   drawChart(element, [elementHeight, elementWidth, data]) {
     const color = this.args.color;
@@ -25,7 +30,10 @@ export default class LineChartComponent extends Component {
     if (!elementHeight || !elementWidth) {
       return;
     }
-    const svg = d3.select(element);
+
+    const svg = d3.select(`#${this.chartId}`).append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     const x = d3.scaleUtc()
       .domain(d3.extent(data.dates))
