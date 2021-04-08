@@ -22,9 +22,12 @@ export default class LineChartComponent extends Component {
     const dataPointDotRadius = 6;
     const legendWidth = 200;
     const defaultLegendOffset = 50;
+    const legendChartTitleOffsetY = 19;
     const legendChartOffset = 10;
     const legendTextPadding = 5;
     const legendChartBarStroke = 2;
+    const legendXStart = width - legendWidth + legendChartOffset - margin.right;
+    const legendXEnd = width - margin.right - legendChartBarStroke;
 		const legend = d3.select('#legend');
 
     if (!elementHeight || !elementWidth) {
@@ -45,11 +48,15 @@ export default class LineChartComponent extends Component {
 
     const legendX = d3.scaleLinear()
       .domain([0, d3.max(data.series, d => d3.max(d.values))])
-      .range([width - legendWidth + legendChartOffset - margin.right, width - margin.right - legendChartBarStroke]);
+      .range([legendXStart, legendXEnd]);
 
     const legendY = d3.scaleBand()
       .domain(data.series.map(item => item.name))
       .range([margin.top, height - margin.bottom]);
+
+    const legendChartY = d3.scaleBand()
+      .domain(data.series.map(item => item.name))
+      .range([margin.top + legendChartTitleOffsetY, height + legendChartTitleOffsetY - margin.bottom]);
 
     const line = d3.line()
       .defined(d => !isNaN(d))
@@ -100,6 +107,12 @@ export default class LineChartComponent extends Component {
       .attr('y', d => legendY(d.name) + legendY.bandwidth() / 2 + legendTextPadding)
       .text((d) => formatText(d.name));
 
+    const legendChartTitle = svg.append('g')
+      .append('text')
+      .attr('x', ((legendXEnd - legendXStart) / 2) + legendXStart)
+      .attr('y', legendChartTitleOffsetY + legendTextPadding)
+      .attr('text-anchor', 'middle');
+
     const legendChartBars = svg.append('g')
       .selectAll('rect')
       .data(data.series)
@@ -135,7 +148,7 @@ export default class LineChartComponent extends Component {
 
           let sortedDataSeries = data.series.sort((a, b) => byValueAtIndex(a, b, index));
           legendX.domain([0, d3.max(sortedDataSeries, d => d3.max(d.values))]);
-          legendY.domain(sortedDataSeries.map(item => item.name));
+          legendChartY.domain(sortedDataSeries.map(item => item.name));
 
 					dataPointLine.attr('stroke', 'black')
 						.attr('x1', x(roundedDateAtMousePosition))
@@ -153,6 +166,9 @@ export default class LineChartComponent extends Component {
           if (defaultLegendText) defaultLegendText.style('display', 'none');
           if (defaultLegendDots) defaultLegendDots.style('display', 'none');
 
+          legendChartTitle.style('display', 'block')
+            .text(DateTime.fromJSDate(roundedDateAtMousePosition).toFormat('MMMM yyyy'));
+
           legendChartBars.style('display', 'block')
             .attr('stroke', d => color(d.name))
             .attr('stroke-width', legendChartBarStroke)
@@ -160,13 +176,13 @@ export default class LineChartComponent extends Component {
             .attr('fill', d => color(d.name))
             .attr('fill-opacity', 0.7)
             .attr('x', legendX(0))
-            .attr('y', d => legendY(d.name))
-            .attr('height', legendY.bandwidth() - legendChartBarStroke)
+            .attr('y', d => legendChartY(d.name))
+            .attr('height', legendChartY.bandwidth() - legendChartBarStroke)
             .attr('width', d => legendX(d.values[index]) - legendX(0));
 
           legendChartText.style('display', 'block')
               .attr('x', legendX(0) + legendTextPadding)
-              .attr('y', d => legendY(d.name) + legendY.bandwidth() / 2 + legendTextPadding)
+              .attr('y', d => legendChartY(d.name) + legendChartY.bandwidth() / 2 + legendTextPadding)
               .text((d) => {
                 let value = d.values[index];
                 return value ? `${formatText(d.name)}: ${formatValue(value)}` : '';
@@ -175,6 +191,7 @@ export default class LineChartComponent extends Component {
         .on('mouseout', () => {
           if (dataPointLine) dataPointLine.attr('stroke', 'none');
           if (dataPointDots) dataPointDots.style('display', 'none');
+          if (legendChartTitle) legendChartTitle.style('display', 'none');
           if (legendChartBars) legendChartBars.style('display', 'none');
           if (legendChartText) legendChartText.style('display', 'none');
           if (defaultLegendText) defaultLegendText.style('display', 'block');
