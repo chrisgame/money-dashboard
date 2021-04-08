@@ -121,9 +121,17 @@ export default class LineChartComponent extends Component {
         .attr('height', height)
         .attr('opacity', 0)
         .on('mousemove', () => {
+          let valueAtMousePosition = y.invert(d3.mouse(mouseOverLineChartBox.node())[1]).toFixed(0);
 					let dateAtMousePosition = x.invert(d3.mouse(mouseOverLineChartBox.node())[0]);
           let roundedDateAtMousePosition = nearestMonthTo(dateAtMousePosition);
 					let index = data.dates.findIndex(date => DateTime.fromJSDate(date).toFormat('yyyy-MM') === DateTime.fromJSDate(roundedDateAtMousePosition).toFormat('yyyy-MM'));
+
+          path.attr("stroke", d => {
+            let seriesAndValue = data.series.map((item) => ({[item.name]: item.values[index]}));
+            let isOnDataPointLine = approximateDateMatch(dateAtMousePosition, roundedDateAtMousePosition);
+
+            return colorGivenMousePosition(seriesAndValue, valueAtMousePosition, isOnDataPointLine, color, d);
+          });
 
           let sortedDataSeries = data.series.sort((a, b) => byValueAtIndex(a, b, index));
           legendX.domain([0, d3.max(sortedDataSeries, d => d3.max(d.values))]);
@@ -171,8 +179,17 @@ export default class LineChartComponent extends Component {
           if (legendChartText) legendChartText.style('display', 'none');
           if (defaultLegendText) defaultLegendText.style('display', 'block');
           if (defaultLegendDots) defaultLegendDots.style('display', 'block');
+          if (path) path.attr('stroke', d => color(d.name));
 				});
   }
+}
+
+function approximateDateMatch(dateTime1, dateTime2) {
+  let date1 = DateTime.fromJSDate(dateTime1).startOf('day');
+  let date2 = DateTime.fromJSDate(dateTime2).startOf('day');
+  let diff = date1.diff(date2, 'days').days;
+
+  return diff <= 3 && diff >= -3;
 }
 
 function nearestMonthTo(date) {
@@ -189,9 +206,28 @@ function nearestMonthTo(date) {
 function formatText(text) {
   return capitalize(text).replaceAll('_', ' ');
 }
+
 function byValueAtIndex(a, b, index) {
   let aValue = a.values[index];
   let bValue = b.values[index];
 
   return bValue - aValue;
+}
+
+function colorGivenMousePosition(seriesAndValue, value, onDataPointLine, colorScale, d) {
+  let values = seriesAndValue.map((item) => Object.values(item)[0]);
+  let minValue = Math.min(...values);
+  let maxValue = Math.max(...values);
+
+  if (value > maxValue || value < minValue || !onDataPointLine) {
+    return colorScale(d.name);
+  }
+
+  let closestMatch = values.reduce((acc, obj) => {
+    return Math.abs(obj - value) < Math.abs(acc - value) ? obj : acc;
+  });
+
+  let name  = Object.keys(seriesAndValue.filter((item) => Object.values(item)[0] === closestMatch)[0])[0];
+
+  return name === d.name ? colorScale(name) : '#ddd';
 }
