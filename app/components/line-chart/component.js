@@ -18,6 +18,7 @@ export default class LineChartComponent extends Component {
     const margin = ({top: 20, right: 0, bottom: 30, left: 20});
     const height = elementHeight;
     const width = elementWidth;
+    const pathStrokeWidth = 2;
     const yTickGutter = 50;
     const dataPointDotRadius = 6;
     const legendWidth = 200;
@@ -77,7 +78,7 @@ export default class LineChartComponent extends Component {
 
     const path = svg.append('g')
         .attr('fill', 'none')
-        .attr('stroke-width', 1.5)
+        .attr('stroke-width', pathStrokeWidth)
         .attr('stroke-linejoin', 'round')
         .attr('stroke-linecap', 'round')
       .selectAll('path')
@@ -138,12 +139,13 @@ export default class LineChartComponent extends Component {
 					let dateAtMousePosition = x.invert(d3.mouse(mouseOverLineChartBox.node())[0]);
           let roundedDateAtMousePosition = nearestMonthTo(dateAtMousePosition);
 					let index = data.dates.findIndex(date => DateTime.fromJSDate(date).toFormat('yyyy-MM') === DateTime.fromJSDate(roundedDateAtMousePosition).toFormat('yyyy-MM'));
+          let seriesAndValue = data.series.map((item) => ({[item.name]: item.values[index]}));
+          let isOnDataPointLine = approximateDateMatch(dateAtMousePosition, roundedDateAtMousePosition);
 
           path.attr("stroke", d => {
-            let seriesAndValue = data.series.map((item) => ({[item.name]: item.values[index]}));
-            let isOnDataPointLine = approximateDateMatch(dateAtMousePosition, roundedDateAtMousePosition);
-
             return colorGivenMousePosition(seriesAndValue, valueAtMousePosition, isOnDataPointLine, color, d);
+          }).attr('stroke-width', d => {
+            return strokeWidthGivenMousePosition(seriesAndValue, valueAtMousePosition, isOnDataPointLine, pathStrokeWidth, d);
           });
 
           let sortedDataSeries = data.series.sort((a, b) => byValueAtIndex(a, b, index));
@@ -196,7 +198,7 @@ export default class LineChartComponent extends Component {
           if (legendChartText) legendChartText.style('display', 'none');
           if (defaultLegendText) defaultLegendText.style('display', 'block');
           if (defaultLegendDots) defaultLegendDots.style('display', 'block');
-          if (path) path.attr('stroke', d => color(d.name));
+          if (path) path.attr('stroke', d => color(d.name)).attr('stroke-width', pathStrokeWidth);
 				});
   }
 }
@@ -231,20 +233,46 @@ function byValueAtIndex(a, b, index) {
   return bValue - aValue;
 }
 
-function colorGivenMousePosition(seriesAndValue, value, onDataPointLine, colorScale, d) {
+function isInDataPointRange(seriesAndValue, value, onDataPointLine) {
   let values = seriesAndValue.map((item) => Object.values(item)[0]);
   let minValue = Math.min(...values);
   let maxValue = Math.max(...values);
 
   if (value > maxValue || value < minValue || !onDataPointLine) {
-    return colorScale(d.name);
+    return false;
   }
 
+  return true;
+}
+
+function nameOfClosestMatch(seriesAndValue, values, value) {
   let closestMatch = values.reduce((acc, obj) => {
     return Math.abs(obj - value) < Math.abs(acc - value) ? obj : acc;
   });
 
-  let name  = Object.keys(seriesAndValue.filter((item) => Object.values(item)[0] === closestMatch)[0])[0];
+  return Object.keys(seriesAndValue.filter((item) => Object.values(item)[0] === closestMatch)[0])[0];
+}
+
+function colorGivenMousePosition(seriesAndValue, value, onDataPointLine, colorScale, d) {
+  let values = seriesAndValue.map((item) => Object.values(item)[0]);
+
+  if (!isInDataPointRange(seriesAndValue, value, onDataPointLine)) {
+    return colorScale(d.name);
+  }
+
+  let name = nameOfClosestMatch(seriesAndValue, values, value);
 
   return name === d.name ? colorScale(name) : '#ddd';
+}
+
+function strokeWidthGivenMousePosition(seriesAndValue, value, onDataPointLine, pathStrokeWidth, d) {
+  let values = seriesAndValue.map((item) => Object.values(item)[0]);
+
+  if (!isInDataPointRange(seriesAndValue, value, onDataPointLine)) {
+    return pathStrokeWidth;
+  }
+
+  let name = nameOfClosestMatch(seriesAndValue, values, value);
+
+  return name === d.name ? pathStrokeWidth * 2 : pathStrokeWidth;
 }
