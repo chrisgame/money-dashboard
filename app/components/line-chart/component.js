@@ -199,7 +199,13 @@ export default class LineChartComponent extends Component {
           if (defaultLegendText) defaultLegendText.style('display', 'block');
           if (defaultLegendDots) defaultLegendDots.style('display', 'block');
           if (path) path.attr('stroke', d => color(d.name)).attr('stroke-width', pathStrokeWidth);
-				});
+				})
+        .on('click', () => {
+					let dateAtMousePosition = x.invert(d3.mouse(mouseOverLineChartBox.node())[0]);
+          let roundedDateAtMousePosition = nearestMonthTo(dateAtMousePosition);
+
+          this.args.onDataPointClick(roundedDateAtMousePosition);
+        });
   }
 }
 
