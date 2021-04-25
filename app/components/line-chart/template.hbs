@@ -1,8 +1,1 @@
-<div
-  ...attributes
-  {{did-update this.drawChart @height @width @data}}
-  {{did-insert this.drawChart @height @width @data}}
-  >
-
-  <div id={{this.chartId}}></div>
-</div>
+<div ...attributes {{line-chart this.dimentions @data this.options}}></div>
