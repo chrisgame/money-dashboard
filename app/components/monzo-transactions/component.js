@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+import { capitalize } from '@ember/string';
 import { computed } from '@ember/object';
 import d3 from 'd3';
 
@@ -41,5 +42,9 @@ export default Component.extend({
 		});
 
     return formatter.format(Math.ceil(value / 100));
+  },
+
+  formatText(text) {
+    return capitalize(text).replaceAll('_', ' ');
   }
 });

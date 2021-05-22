@@ -1,1 +1,79 @@
 <div ...attributes {{line-chart this.dimentions @data this.options}}></div>
+<svg
+  ...attributes
+  {{dimentions width=this.dimentions.chartWidth height=this.dimentions.height}}
+  {{x-axis
+    data=@data
+    height=this.xAxis.height
+    rangeStart=this.xAxis.rangeStart
+    rangeEnd=this.xAxis.rangeEnd
+    x=this.x
+  }}
+  {{y-axis
+    data=@data
+    width=this.yAxis.width
+    rangeStart=this.yAxis.rangeStart
+    rangeEnd=this.yAxis.rangeEnd
+    formatTickLabel=this.yAxis.formatTickLabel
+    y=this.y
+  }}
+  {{paths
+    data=@data
+    x=this.x
+    y=this.y
+    color=this.pathsColor
+    strokeWidth=this.strokeWidth
+  }}
+  {{mouse-over-box
+    data=@data
+    dimentions=this.dimentions
+    formatLegendLabel=this.options.formatLegendLabel
+    x=this.x
+    y=this.y
+    color=this.options.color
+    onEnterDataPoint=this.mouseEnterDataPoint
+    onExitDataPoint=this.mouseExitDataPoint
+    onEnterDataPointLine=this.mouseEnterDataPointLine
+    onExitDataPointLine=this.mouseExitDataPointLine
+    onDataPointClick=this.options.onDataPointClick
+  }}
+>
+</svg>
+
+{{#if currentDataPoint }}
+  <svg
+    {{dimentions width=this.dimentions.legendWidth height=this.dimentions.height}}
+    {{text
+      data=currentDataPoint
+      dimentions=this.dimentions
+      x=this.dimentions.legendBarTitleX
+      y=this.dimentions.legendBarTitleY
+      text=this.barChartTitleText
+    }}
+    {{bar-chart
+      data=currentDataPoint
+      dimentions=this.dimentions
+      formatLegendLabel=this.options.formatLegendLabel
+      formatValue=this.options.formatValue
+      x=this.barChartLegendX
+      y=this.barChartLegendY
+      color=this.options.color
+      barStroke=this.options.legendBarStroke
+      textPadding=this.options.legendTextPadding
+    }}
+  >
+  </svg>
+{{else}}
+  <svg
+    {{dimentions width=this.dimentions.legendWidth height=this.dimentions.height}}
+    {{legend
+      data=@data
+      dimentions=this.dimentions
+      formatLabel=this.options.formatLegendLabel
+      x=this.staticLegendX
+      y=this.staticLegendY
+      color=this.options.color
+    }}
+  >
+  </svg>
+{{/if}}
