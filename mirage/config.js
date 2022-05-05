@@ -99,6 +99,18 @@ export default function() {
             },
           ],
           'created': '2016-11-13T12:17:42Z'
+        },
+        {
+          'id': 'acc_01009237sdfdsfdsw4rwefxsea',
+          'description': "Better Data",
+          'owners': [
+            {
+              'user_id': 'acc_01009237sdfdsfdsw4rwefxsea',
+              'preferred_name': 'John Doe',
+              'preferred_first_name': 'John'
+            },
+          ],
+          'created': '2022-04-05T12:17:42Z'
         }
       ]
     };
@@ -123,6 +135,14 @@ export default function() {
 
     if (error) {
       return new Response(400, {}, error);
+    }
+
+    if (request.queryParams.account_id === 'acc_01009237sdfdsfdsw4rwefxsea') {
+      let monzoTransactions = schema['monzoTransactions'].all();
+
+			monzoTransactions.destroy();
+
+      this.loadFixtures('monzo-transactions')
     }
 
     return schema['monzoTransactions'].all();

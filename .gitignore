@@ -25,3 +25,6 @@
 errors.csv
 statements/
 _research/
+
+# test_data
+/mirage/fixtures/
