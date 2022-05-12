@@ -14,7 +14,8 @@ const CATEGORIES = [
   'expenses',
   'family',
   'personal_care',
-  'charity'
+  'charity',
+  'cash'
 ];
 
 export default Factory.extend({
@@ -22,7 +23,7 @@ export default Factory.extend({
     return 0;
   },
   amount() {
-    return faker.random.number({ min:-1000, max: -1 });
+    return faker.random.number({ min:-30000000, max: -1 });
   },
   created() {
     return faker.date.past();
